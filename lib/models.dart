@@ -9,6 +9,7 @@ class DeviceInfo {
     required this.isGMS,
     required this.isHMS,
     required this.isMIUI,
+    required this.isHMOS,
     required this.isTablet,
     required this.manufacturer,
     required this.model,
@@ -34,6 +35,7 @@ class DeviceInfo {
         isMIUI = json['is_miui'],
         isGMS = json['is_gms'],
         isHMS = json['is_hms'],
+        isHMOS = json['is_hmos'],
         memoryTotal = json['memory_total'],
         storageTotal = json['storage_total'],
         storageFree = json['storage_free'];
@@ -53,6 +55,7 @@ class DeviceInfo {
         isMIUI = false,
         isGMS = false,
         isHMS = false,
+        isHMOS = false,
         memoryTotal = 0,
         storageTotal = 0,
         storageFree = 0;
@@ -71,6 +74,7 @@ class DeviceInfo {
   final bool isMIUI;
   final bool isGMS;
   final bool isHMS;
+  final bool isHMOS;
   final int memoryTotal;
   final int storageTotal;
   final int storageFree;
@@ -90,6 +94,7 @@ class DeviceInfo {
     bool? isMIUI,
     bool? isGMS,
     bool? isHMS,
+    bool? isHMOS,
     int? memoryTotal,
     int? storageTotal,
     int? storageFree,
@@ -104,6 +109,7 @@ class DeviceInfo {
       isGMS: isGMS ?? this.isGMS,
       isHMS: isHMS ?? this.isHMS,
       isMIUI: isMIUI ?? this.isMIUI,
+      isHMOS: isHMOS ?? this.isHMOS,
       isTablet: isTablet ?? this.isTablet,
       manufacturer: manufacturer ?? this.manufacturer,
       model: model ?? this.model,
@@ -131,6 +137,7 @@ class DeviceInfo {
       'is_miui': isMIUI,
       'is_gms': isGMS,
       'is_hms': isHMS,
+      'is_hmos': isHMOS,
       'memory_total': memoryTotal,
       'storage_total': storageTotal,
       'storage_free': storageFree,

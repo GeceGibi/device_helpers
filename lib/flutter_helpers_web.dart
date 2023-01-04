@@ -6,15 +6,15 @@ import 'dart:html' as html show window;
 
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
-import 'helpers_platform_interface.dart';
+import 'flutter_helpers_platform_interface.dart';
 
 /// A web implementation of the HelpersPlatform of the Helpers plugin.
-class HelpersWeb extends HelpersPlatform {
+class HelpersWeb extends FlutterHelpersPlatform {
   /// Constructs a HelpersWeb
   HelpersWeb();
 
   static void registerWith(Registrar registrar) {
-    HelpersPlatform.instance = HelpersWeb();
+    FlutterHelpersPlatform.instance = HelpersWeb();
   }
 
   /// Returns a [String] containing the version of the platform.

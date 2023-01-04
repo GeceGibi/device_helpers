@@ -13,7 +13,6 @@ import android.os.*
 import android.provider.Settings
 import android.text.TextUtils
 import androidx.annotation.NonNull
-import com.google.android.gms.ads.identifier.AdvertisingIdClient
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -24,16 +23,14 @@ import io.flutter.plugin.common.MethodChannel.Result
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
+import java.io.ObjectInput
 import java.lang.reflect.Method
 import java.util.concurrent.Executors
 
 
 /** HelpersPlugin */
 class HelpersPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
-    /// The MethodChannel that will the communication between Flutter and native Android
-    ///
-    /// This local reference serves to register the plugin with the Flutter Engine and unregister it
-    /// when the Flutter Engine is detached from the Activity
+
     private lateinit var channel: MethodChannel
     private lateinit var context: Context
     private lateinit var activity: Activity
@@ -74,22 +71,32 @@ class HelpersPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         channel.setMethodCallHandler(null)
     }
 
-    private fun requestTrackingAuthorization(result: MethodChannel.Result){
+    private fun requestTrackingAuthorization(result: Result) {
         result.success(3)
     }
 
-    private fun getIdfa(result: MethodChannel.Result) {
+    private fun getIdfa(result: Result) {
         val executor = Executors.newSingleThreadExecutor()
 
         executor.execute {
             try {
-                val adInfo = AdvertisingIdClient.getAdvertisingIdInfo(context)
-                result.success(if (adInfo != null) adInfo.id else null)
+                val advertisingIdClient: Class<*> = Class.forName(
+                    if (isHMOS()) "com.huawei.hms.ads.identifier.AdvertisingIdClient"
+                    else "com.google.android.gms.ads.identifier.AdvertisingIdClient"
+                )
+                val getInfoMethod: Method = advertisingIdClient.getMethod(
+                    "getAdvertisingIdInfo", Context::class.java
+                )
+                val adInfo: Any = getInfoMethod.invoke(null, context)
+                var getIdMetHod: Method = adInfo.javaClass.getMethod("getId")
+
+                result.success(if (adInfo != null) getIdMetHod(adInfo) else null)
             } catch (e: Exception) {
-                e.printStackTrace()
                 result.success(null)
             }
         }
+
+
     }
 
     ///
@@ -111,11 +118,15 @@ class HelpersPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     private fun openAppNotificationSettings() {
         val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
-                .putExtra(Settings.EXTRA_APP_PACKAGE, activity.packageName)
+            Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(
+                Settings.EXTRA_APP_PACKAGE, activity.packageName
+            )
         } else {
-            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                .setData(Uri.fromParts("package", activity.packageName, null))
+            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).setData(
+                Uri.fromParts(
+                    "package", activity.packageName, null
+                )
+            )
         }
 
         activity.startActivity(intent);
@@ -145,22 +156,17 @@ class HelpersPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     }
 
     private fun isEmulator(): Boolean {
-        return (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic"))
-                || Build.FINGERPRINT.startsWith("generic")
-                || Build.FINGERPRINT.startsWith("unknown")
-                || Build.HARDWARE.contains("goldfish")
-                || Build.HARDWARE.contains("ranchu")
-                || Build.MODEL.contains("google_sdk")
-                || Build.MODEL.contains("Emulator")
-                || Build.MODEL.contains("Android SDK built for x86")
-                || Build.MANUFACTURER.contains("Genymotion")
-                || Build.PRODUCT.contains("sdk_google")
-                || Build.PRODUCT.contains("google_sdk")
-                || Build.PRODUCT.contains("sdk")
-                || Build.PRODUCT.contains("sdk_x86")
-                || Build.PRODUCT.contains("vbox86p")
-                || Build.PRODUCT.contains("emulator")
-                || Build.PRODUCT.contains("simulator");
+        return (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic")) || Build.FINGERPRINT.startsWith(
+            "generic"
+        ) || Build.FINGERPRINT.startsWith("unknown") || Build.HARDWARE.contains("goldfish") || Build.HARDWARE.contains(
+            "ranchu"
+        ) || Build.MODEL.contains("google_sdk") || Build.MODEL.contains("Emulator") || Build.MODEL.contains(
+            "Android SDK built for x86"
+        ) || Build.MANUFACTURER.contains("Genymotion") || Build.PRODUCT.contains("sdk_google") || Build.PRODUCT.contains(
+            "google_sdk"
+        ) || Build.PRODUCT.contains("sdk") || Build.PRODUCT.contains("sdk_x86") || Build.PRODUCT.contains(
+            "vbox86p"
+        ) || Build.PRODUCT.contains("emulator") || Build.PRODUCT.contains("simulator");
     }
 
 
@@ -188,13 +194,12 @@ class HelpersPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     private fun isGMSAvailable(): Boolean {
         return try {
-            val googleApiAvailability: java.lang.Class<*> =
-                java.lang.Class.forName("com.google.android.gms.common.GoogleApiAvailability")
+            val googleApiAvailability: Class<*> =
+                Class.forName("com.google.android.gms.common.GoogleApiAvailability")
             val getInstanceMethod: Method = googleApiAvailability.getMethod("getInstance")
             val gmsObject: Any = getInstanceMethod.invoke(null)
             val isGooglePlayServicesAvailableMethod: Method = gmsObject.javaClass.getMethod(
-                "isGooglePlayServicesAvailable",
-                Context::class.java
+                "isGooglePlayServicesAvailable", Context::class.java
             )
 
             // if response 0 -> ConnectionResult.SUCCESS
@@ -210,8 +215,7 @@ class HelpersPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             val getInstanceMethod: Method = huaweiApiAvailability.getMethod("getInstance")
             val hmsObject: Any = getInstanceMethod.invoke(null)
             val isHuaweiMobileServicesAvailableMethod: Method = hmsObject.javaClass.getMethod(
-                "isHuaweiMobileServicesAvailable",
-                Context::class.java
+                "isHuaweiMobileServicesAvailable", Context::class.java
             )
 
             // if response 0 -> ConnectionResult.SUCCESS
@@ -233,7 +237,7 @@ class HelpersPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         val statFs = StatFs(Environment.getDataDirectory().absolutePath)
 
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            (statFs.blockCountLong * statFs.blockSizeLong).toLong()
+            statFs.blockCountLong * statFs.blockSizeLong
         } else {
             (statFs.blockCount * statFs.blockSize).toLong()
         }
@@ -243,19 +247,26 @@ class HelpersPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         val statFs = StatFs(Environment.getDataDirectory().absolutePath)
 
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            (statFs.availableBlocksLong * statFs.blockSizeLong).toLong()
+            statFs.availableBlocksLong * statFs.blockSizeLong
         } else {
             (statFs.availableBlocks * statFs.blockSize).toLong()
+        }
+    }
+
+    private fun isHMOS(): Boolean {
+        return try {
+            return Class.forName("ohos.app.Application") != null
+        } finally {
+            return false
         }
     }
 
     private fun getDeviceInfo(result: MethodChannel.Result) {
         try {
             val appInfo: ApplicationInfo = context.applicationInfo
-            val packageInfo: PackageInfo =
-                context.packageManager.getPackageInfo(
-                    context.packageName, 0,
-                );
+            val packageInfo: PackageInfo = context.packageManager.getPackageInfo(
+                context.packageName, 0,
+            );
 
             var appVersion = packageInfo.versionName;
             var appBuild = getLongVersionCode(packageInfo);
@@ -275,6 +286,7 @@ class HelpersPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 "is_miui" to !TextUtils.isEmpty(getSystemProperty("ro.miui.ui.version.name")),
                 "is_gms" to isGMSAvailable(),
                 "is_hms" to isHMSAvailable(),
+                "is_hmos" to isHMOS(),
                 "is_emulator" to isEmulator(),
                 "memory_total" to getMemoryTotal(),
                 "storage_total" to getTotalDiskSpace(),
@@ -283,7 +295,7 @@ class HelpersPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
             result.success(info);
         } catch (e: Exception) {
-            result.error("DEVICE_INFO", "CANNOT GET INFO", e)
+            result.error("DEVICE_INFO", "CANNOT GET INFO", e.stackTrace)
         }
     }
 }

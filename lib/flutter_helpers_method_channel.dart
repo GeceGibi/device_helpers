@@ -1,11 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:helpers/models.dart';
+import 'package:flutter_helpers/models.dart';
 
-import 'helpers_platform_interface.dart';
+import 'flutter_helpers_platform_interface.dart';
 
 /// An implementation of [HelpersPlatform] that uses method channels.
-class MethodChannelHelpers extends HelpersPlatform {
+class MethodChannelHelpers extends FlutterHelpersPlatform {
   /// The method channel used to interact with the native platform.
   @visibleForTesting
   final methodChannel = const MethodChannel('gece.dev/helpers');
@@ -18,8 +18,8 @@ class MethodChannelHelpers extends HelpersPlatform {
       );
 
       return DeviceInfo.fromJson(data!);
-    } catch (e) {
-      throw DeviceInfoError('Upps..');
+    } on PlatformException catch (e) {
+      throw DeviceInfoError(e.message ?? "Ups..");
     }
   }
 

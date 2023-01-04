@@ -1,25 +1,25 @@
-import 'package:helpers/models.dart';
+import 'package:flutter_helpers/models.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import 'helpers_method_channel.dart';
+import 'flutter_helpers_method_channel.dart';
 
-abstract class HelpersPlatform extends PlatformInterface {
+abstract class FlutterHelpersPlatform extends PlatformInterface {
   /// Constructs a HelpersPlatform.
-  HelpersPlatform() : super(token: _token);
+  FlutterHelpersPlatform() : super(token: _token);
 
   static final Object _token = Object();
 
-  static HelpersPlatform _instance = MethodChannelHelpers();
+  static FlutterHelpersPlatform _instance = MethodChannelHelpers();
 
   /// The default instance of [HelpersPlatform] to use.
   ///
   /// Defaults to [MethodChannelHelpers].
-  static HelpersPlatform get instance => _instance;
+  static FlutterHelpersPlatform get instance => _instance;
 
   /// Platform-specific implementations should set this with their own
   /// platform-specific class that extends [HelpersPlatform] when
   /// they register themselves.
-  static set instance(HelpersPlatform instance) {
+  static set instance(FlutterHelpersPlatform instance) {
     PlatformInterface.verifyToken(instance, _token);
     _instance = instance;
   }

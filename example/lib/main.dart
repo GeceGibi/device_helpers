@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-import 'package:flutter/services.dart';
-import 'package:helpers/helpers.dart';
+import 'package:flutter_helpers/flutter_helpers.dart';
 
 void main() {
   runApp(const MyApp());
@@ -33,11 +32,11 @@ class _MyAppState extends State<MyApp> {
     //   Helpers.badgeUpdate(20);
     // });
 
-    Helpers.requestTrackingAuthorization().then((value) async {
-      print(await Helpers.getIdfa());
+    FlutterHelpers.requestTrackingAuthorization().then((value) async {
+      print(await FlutterHelpers.getIdfa());
     });
 
-    final info = await Helpers.getDeviceInfo();
+    final info = await FlutterHelpers.getDeviceInfo();
 
     setState(() {
       deviceInfo = info;
