@@ -23,7 +23,6 @@ import io.flutter.plugin.common.MethodChannel.Result
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
-import java.io.ObjectInput
 import java.lang.reflect.Method
 import java.util.concurrent.Executors
 
@@ -72,7 +71,7 @@ class HelpersPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     }
 
     private fun requestTrackingAuthorization(result: Result) {
-        result.success(3)
+        result.success(4)
     }
 
     private fun getIdfa(result: Result) {
@@ -95,8 +94,6 @@ class HelpersPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 result.success(null)
             }
         }
-
-
     }
 
     ///
