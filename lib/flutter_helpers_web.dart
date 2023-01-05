@@ -9,12 +9,12 @@ import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'flutter_helpers_platform_interface.dart';
 
 /// A web implementation of the HelpersPlatform of the Helpers plugin.
-class HelpersWeb extends FlutterHelpersPlatform {
+class FlutterHelpersWeb extends FlutterHelpersPlatform {
   /// Constructs a HelpersWeb
-  HelpersWeb();
+  FlutterHelpersWeb();
 
   static void registerWith(Registrar registrar) {
-    FlutterHelpersPlatform.instance = HelpersWeb();
+    FlutterHelpersPlatform.instance = FlutterHelpersWeb();
   }
 
   /// Returns a [String] containing the version of the platform.

@@ -1,5 +1,7 @@
+import 'dart:io';
+
 class DeviceInfo {
-  const DeviceInfo({
+  DeviceInfo({
     required this.appBuild,
     required this.appBundle,
     required this.appName,
@@ -18,6 +20,9 @@ class DeviceInfo {
     required this.storageFree,
     required this.storageTotal,
     required this.uuid,
+    required this.os,
+    required this.sdkVersion,
+    required this.numberOfProcessors,
   });
 
   DeviceInfo.fromJson(Map<String, dynamic> json)
@@ -29,6 +34,9 @@ class DeviceInfo {
         appBundle = json['app_bundle'],
         appBuild = json['app_build'],
         appName = json['app_name'],
+        os = Platform.operatingSystem,
+        sdkVersion = Platform.version,
+        numberOfProcessors = Platform.numberOfProcessors,
         osVersion = json['os_version'],
         isEmulator = json['is_emulator'],
         isTablet = json['is_tablet'],
@@ -46,7 +54,10 @@ class DeviceInfo {
         appBuild = "",
         appName = "",
         manufacturer = "",
-        osVersion = "",
+        os = Platform.operatingSystem,
+        osVersion = Platform.operatingSystemVersion,
+        sdkVersion = Platform.version,
+        numberOfProcessors = Platform.numberOfProcessors,
         brand = "",
         model = "",
         uuid = "",
@@ -68,13 +79,16 @@ class DeviceInfo {
   final String appBundle;
   final String appBuild;
   final String appName;
+  final String os;
   final String osVersion;
+  final String sdkVersion;
   final bool isEmulator;
   final bool isTablet;
   final bool isMIUI;
   final bool isGMS;
   final bool isHMS;
   final bool isHMOS;
+  final int numberOfProcessors;
   final int memoryTotal;
   final int storageTotal;
   final int storageFree;
@@ -89,12 +103,15 @@ class DeviceInfo {
     String? appBuild,
     String? appName,
     String? osVersion,
+    String? os,
+    String? sdkVersion,
     bool? isEmulator,
     bool? isTablet,
     bool? isMIUI,
     bool? isGMS,
     bool? isHMS,
     bool? isHMOS,
+    int? numberOfProcessors,
     int? memoryTotal,
     int? storageTotal,
     int? storageFree,
@@ -113,6 +130,9 @@ class DeviceInfo {
       isTablet: isTablet ?? this.isTablet,
       manufacturer: manufacturer ?? this.manufacturer,
       model: model ?? this.model,
+      os: os ?? this.os,
+      sdkVersion: sdkVersion ?? this.sdkVersion,
+      numberOfProcessors: numberOfProcessors ?? this.numberOfProcessors,
       osVersion: osVersion ?? this.osVersion,
       memoryTotal: memoryTotal ?? this.memoryTotal,
       storageFree: storageFree ?? this.storageFree,

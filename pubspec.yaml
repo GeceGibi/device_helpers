@@ -38,13 +38,13 @@ flutter:
   plugin:
     platforms:
       android:
-        package: com.example.helpers
-        pluginClass: HelpersPlugin
+        package: gecegibi.flutter.helpers
+        pluginClass: FlutterHelpersPlugin
       ios:
-        pluginClass: HelpersPlugin
+        pluginClass: FlutterHelpersPlugin
       web:
-        pluginClass: HelpersWeb
-        fileName: helpers_web.dart
+        pluginClass: FlutterHelpersWeb
+        fileName: flutter_helpers_web.dart
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:

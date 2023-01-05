@@ -1,4 +1,4 @@
-package com.example.helpers
+package gecegibi.flutter.helpers
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -27,8 +27,8 @@ import java.lang.reflect.Method
 import java.util.concurrent.Executors
 
 
-/** HelpersPlugin */
-class HelpersPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
+/** FlutterHelpersPlugin */
+class FlutterHelpersPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     private lateinit var channel: MethodChannel
     private lateinit var context: Context

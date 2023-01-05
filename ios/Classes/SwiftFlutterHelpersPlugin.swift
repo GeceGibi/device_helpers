@@ -3,12 +3,11 @@ import AdSupport
 import Flutter
 import UIKit
 
-public class SwiftHelpersPlugin: NSObject, FlutterPlugin {
-    
+public class SwiftFlutterHelpersPlugin: NSObject, FlutterPlugin {
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "gece.dev/helpers", binaryMessenger: registrar.messenger())
-        let instance = SwiftHelpersPlugin()
+        let instance = SwiftFlutterHelpersPlugin()
         
         registrar.addMethodCallDelegate(instance, channel: channel)
         registrar.addApplicationDelegate(instance)
@@ -204,6 +203,7 @@ public class SwiftHelpersPlugin: NSObject, FlutterPlugin {
             "is_miui": false,
             "is_gms": false,
             "is_hms": false,
+            "is_hmos": false,
             "memory_total": Int(ProcessInfo.processInfo.physicalMemory),
             "storage_total": totalDiskSpaceInBytes,
             "storage_free" : freeDiskSpaceInBytes,

@@ -1,4 +1,4 @@
-group 'com.example.helpers'
+group 'gecegibi.flutter.helpers'
 version '1.0-SNAPSHOT'
 
 buildscript {

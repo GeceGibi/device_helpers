@@ -3,7 +3,7 @@
 # Run `pod lib lint helpers.podspec` to validate before publishing.
 #
 Pod::Spec.new do |s|
-  s.name             = 'helpers'
+  s.name             = 'flutter_helpers'
   s.version          = '0.0.1'
   s.summary          = 'A new Flutter plugin project.'
   s.description      = <<-DESC
