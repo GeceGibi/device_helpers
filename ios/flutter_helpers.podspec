@@ -7,7 +7,7 @@ Pod::Spec.new do |s|
   s.version          = '1.0.0'
   s.summary          = 'Flutter helpers tools'
   s.description      = <<-DESC
-
+  Flutter helpers sdk.
                        DESC
   s.homepage         = 'http://gece.dev'
   s.license          = { :file => '../LICENSE' }
