@@ -1,5 +1,5 @@
 group 'gecegibi.flutter.helpers'
-version '1.0-SNAPSHOT'
+version '1.0.0'
 
 buildscript {
     ext.kotlin_version = '1.6.10'

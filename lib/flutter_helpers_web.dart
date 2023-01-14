@@ -2,8 +2,9 @@
 // of your plugin as a separate package, instead of inlining it in the same
 // package as the core of your plugin.
 // ignore: avoid_web_libraries_in_flutter
-import 'dart:html' as html show window;
+import 'dart:html' as html show window, Platform;
 
+import 'package:flutter_helpers/models.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
 import 'flutter_helpers_platform_interface.dart';
@@ -17,10 +18,37 @@ class FlutterHelpersWeb extends FlutterHelpersPlatform {
     FlutterHelpersPlatform.instance = FlutterHelpersWeb();
   }
 
-  /// Returns a [String] containing the version of the platform.
   @override
-  Future<String?> getPlatformVersion() async {
-    final version = html.window.navigator.userAgent;
-    return version;
+  Future<void> badgeUpdate(int value) async {}
+
+  @override
+  Future<bool> badgeUpdateRequest() async {
+    return false;
+  }
+
+  @override
+  Future<String?> getIdfa() async {
+    return null;
+  }
+
+  @override
+  Future<TrackingRequestStatus> requestTrackingAuthorization() async {
+    return TrackingRequestStatus.notSupported;
+  }
+
+  @override
+  Future<void> openAppSettings() async {}
+
+  @override
+  Future<void> openAppNotificationSettings() async {}
+
+  @override
+  Future<DeviceInfo> getDeviceInfo() async {
+    return DeviceInfo.fallback().copyWith(
+      appName: html.window.navigator.appName,
+      appVersion: html.window.navigator.appVersion,
+      appBuild: html.window.navigator.appCodeName,
+      sdkVersion: html.window.navigator.userAgent,
+    );
   }
 }

@@ -54,10 +54,10 @@ class DeviceInfo {
         appBuild = "",
         appName = "",
         manufacturer = "",
-        os = Platform.operatingSystem,
-        osVersion = Platform.operatingSystemVersion,
-        sdkVersion = Platform.version,
-        numberOfProcessors = Platform.numberOfProcessors,
+        os = "",
+        osVersion = "",
+        sdkVersion = "",
+        numberOfProcessors = 0,
         brand = "",
         model = "",
         uuid = "",
@@ -161,6 +161,9 @@ class DeviceInfo {
       'memory_total': memoryTotal,
       'storage_total': storageTotal,
       'storage_free': storageFree,
+      'number_of_Processors': numberOfProcessors,
+      'os': os,
+      'sdk_version': sdkVersion,
     };
   }
 

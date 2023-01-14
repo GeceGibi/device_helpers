@@ -26,7 +26,6 @@ import java.io.InputStreamReader
 import java.lang.reflect.Method
 import java.util.concurrent.Executors
 
-
 /** FlutterHelpersPlugin */
 class FlutterHelpersPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
@@ -103,7 +102,6 @@ class FlutterHelpersPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         // ShortcutBadger.applyCount(context, count)
     }
 
-
     ///
     /// OPEN SETTING SCREENS
     ///
@@ -128,7 +126,6 @@ class FlutterHelpersPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
         activity.startActivity(intent);
     }
-
 
     ///
     /// DEVICE INFO
@@ -165,7 +162,6 @@ class FlutterHelpersPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             "vbox86p"
         ) || Build.PRODUCT.contains("emulator") || Build.PRODUCT.contains("simulator");
     }
-
 
     private fun getSystemProperty(prop: String): String? {
         val line: String

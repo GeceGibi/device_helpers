@@ -19,7 +19,6 @@ public class SwiftFlutterHelpersPlugin: NSObject, FlutterPlugin {
             openAppSettings()
             break;
             
-            
         case "app_notification_settings":
             openAppNotificationSettings()
             break;
@@ -49,11 +48,7 @@ public class SwiftFlutterHelpersPlugin: NSObject, FlutterPlugin {
         }
     }
     
-    public func applicationDidBecomeActive(_ application: UIApplication) {
-
-    }
-    
-    
+    public func applicationDidBecomeActive(_ application: UIApplication) { }
     
     ///
     /// TRACKING REQUEST & IDFA
@@ -73,11 +68,11 @@ public class SwiftFlutterHelpersPlugin: NSObject, FlutterPlugin {
     }
     
     /*
-     case notDetermined = 0
-     case restricted = 1
-     case denied = 2
-     case authorized = 3
-     case notSupported = 4
+    case notDetermined = 0
+    case restricted = 1
+    case denied = 2
+    case authorized = 3
+    case notSupported = 4
      */
     private func requestTrackingAuthorization(result: @escaping FlutterResult) {
         if #available(iOS 14, *) {
@@ -95,7 +90,7 @@ public class SwiftFlutterHelpersPlugin: NSObject, FlutterPlugin {
     ///
     private func openAppSettings(){
         if let url = URL(string: UIApplication.openSettingsURLString) {
-             UIApplication.shared.open(url)
+            UIApplication.shared.open(url)
         }
     }
     
@@ -112,9 +107,7 @@ public class SwiftFlutterHelpersPlugin: NSObject, FlutterPlugin {
     ///
     /// BADGE
     ///
-    
     private var isSupportedBadge = false
-    
     private func updateBadgeRequest(result: @escaping FlutterResult){
         UNUserNotificationCenter.current().requestAuthorization(options: .badge) {
             (granted, error) in
@@ -134,7 +127,6 @@ public class SwiftFlutterHelpersPlugin: NSObject, FlutterPlugin {
     /// ----------
     /// DEVICE INFO
     /// ----------
-    
     var totalDiskSpaceInBytes:Int64 {
         guard let systemAttributes = try? FileManager.default.attributesOfFileSystem(forPath: NSHomeDirectory() as String),
               let space = (systemAttributes[FileAttributeKey.systemSize] as? NSNumber)?.int64Value else { return 0 }
