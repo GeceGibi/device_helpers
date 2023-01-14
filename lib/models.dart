@@ -161,7 +161,7 @@ class DeviceInfo {
       'memory_total': memoryTotal,
       'storage_total': storageTotal,
       'storage_free': storageFree,
-      'number_of_Processors': numberOfProcessors,
+      'number_of_processors': numberOfProcessors,
       'os': os,
       'sdk_version': sdkVersion,
     };
