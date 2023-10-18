@@ -12,6 +12,7 @@ import android.net.Uri
 import android.os.*
 import android.provider.Settings
 import android.text.TextUtils
+import android.util.Log
 import androidx.annotation.NonNull
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -187,8 +188,7 @@ class FlutterHelpersPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     private fun isGMSAvailable(): Boolean {
         return try {
-            val googleApiAvailability: Class<*> =
-                Class.forName("com.google.android.gms.common.GoogleApiAvailability")
+            val googleApiAvailability = Class.forName("com.google.android.gms.common.GoogleApiAvailability")
             val getInstanceMethod: Method = googleApiAvailability.getMethod("getInstance")
             val gmsObject: Any = getInstanceMethod.invoke(null)
             val isGooglePlayServicesAvailableMethod: Method = gmsObject.javaClass.getMethod(
@@ -214,6 +214,11 @@ class FlutterHelpersPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             // if response 0 -> ConnectionResult.SUCCESS
             return isHuaweiMobileServicesAvailableMethod.invoke(hmsObject, context) as Int == 0
         } catch (e: java.lang.Exception) {
+            var tag = "### Huawei"
+            Log.w(tag,e.cause?.message ?: "-")
+            Log.w(tag, e.stackTrace.toString())
+            Log.w(tag,e.message ?: e.toString())
+
             false
         }
     }

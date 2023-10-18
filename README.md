@@ -13,7 +13,7 @@ Should add do `android/app/build.gradle` to
 dependencies {
     ...
     implementation 'com.google.android.gms:play-services-ads-identifier:18.0.1' // GMS
-    implementation 'com.huawei.hms:ads-identifier:3.4.56.300' // HMS
+    implementation 'com.huawei.hms:hwid:6.9.0.301' // HMS
 
 }
 ```
