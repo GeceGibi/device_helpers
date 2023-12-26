@@ -196,6 +196,7 @@ public class SwiftFlutterHelpersPlugin: NSObject, FlutterPlugin {
             "is_gms": false,
             "is_hms": false,
             "is_hmos": false,
+            "is_tv": false,
             "memory_total": Int(ProcessInfo.processInfo.physicalMemory),
             "storage_total": totalDiskSpaceInBytes,
             "storage_free" : freeDiskSpaceInBytes,

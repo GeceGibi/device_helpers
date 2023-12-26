@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.net.Uri
 import android.os.*
@@ -26,6 +27,7 @@ import java.io.IOException
 import java.io.InputStreamReader
 import java.lang.reflect.Method
 import java.util.concurrent.Executors
+
 
 /** FlutterHelpersPlugin */
 class FlutterHelpersPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
@@ -64,7 +66,6 @@ class FlutterHelpersPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             else -> result.notImplemented()
         }
     }
-
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
         channel.setMethodCallHandler(null)
@@ -188,7 +189,8 @@ class FlutterHelpersPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     private fun isGMSAvailable(): Boolean {
         return try {
-            val googleApiAvailability = Class.forName("com.google.android.gms.common.GoogleApiAvailability")
+            val googleApiAvailability =
+                Class.forName("com.google.android.gms.common.GoogleApiAvailability")
             val getInstanceMethod: Method = googleApiAvailability.getMethod("getInstance")
             val gmsObject: Any = getInstanceMethod.invoke(null)
             val isGooglePlayServicesAvailableMethod: Method = gmsObject.javaClass.getMethod(
@@ -215,9 +217,9 @@ class FlutterHelpersPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             return isHuaweiMobileServicesAvailableMethod.invoke(hmsObject, context) as Int == 0
         } catch (e: java.lang.Exception) {
             var tag = "### Huawei"
-            Log.w(tag,e.cause?.message ?: "-")
+            Log.w(tag, e.cause?.message ?: "-")
             Log.w(tag, e.stackTrace.toString())
-            Log.w(tag,e.message ?: e.toString())
+            Log.w(tag, e.message ?: e.toString())
 
             false
         }
@@ -259,6 +261,11 @@ class FlutterHelpersPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         }
     }
 
+    private fun isTV(): Boolean {
+        return (context.packageManager.hasSystemFeature(PackageManager.FEATURE_TELEVISION)
+                || context.packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK))
+    }
+
     private fun getDeviceInfo(result: MethodChannel.Result) {
         try {
             val appInfo: ApplicationInfo = context.applicationInfo
@@ -285,6 +292,7 @@ class FlutterHelpersPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 "is_gms" to isGMSAvailable(),
                 "is_hms" to isHMSAvailable(),
                 "is_hmos" to isHMOS(),
+                "is_tv" to isTV(),
                 "is_emulator" to isEmulator(),
                 "memory_total" to getMemoryTotal(),
                 "storage_total" to getTotalDiskSpace(),

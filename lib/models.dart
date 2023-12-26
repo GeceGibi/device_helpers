@@ -12,6 +12,7 @@ class DeviceInfo {
     required this.isHMS,
     required this.isMIUI,
     required this.isHMOS,
+    required this.isTV,
     required this.isTablet,
     required this.manufacturer,
     required this.model,
@@ -44,6 +45,7 @@ class DeviceInfo {
         isGMS = json['is_gms'],
         isHMS = json['is_hms'],
         isHMOS = json['is_hmos'],
+        isTV = json['is_tv'],
         memoryTotal = json['memory_total'],
         storageTotal = json['storage_total'],
         storageFree = json['storage_free'];
@@ -67,6 +69,7 @@ class DeviceInfo {
         isGMS = false,
         isHMS = false,
         isHMOS = false,
+        isTV = false,
         memoryTotal = 0,
         storageTotal = 0,
         storageFree = 0;
@@ -88,6 +91,7 @@ class DeviceInfo {
   final bool isGMS;
   final bool isHMS;
   final bool isHMOS;
+  final bool isTV;
   final int numberOfProcessors;
   final int memoryTotal;
   final int storageTotal;
@@ -111,6 +115,7 @@ class DeviceInfo {
     bool? isGMS,
     bool? isHMS,
     bool? isHMOS,
+    bool? isTV,
     int? numberOfProcessors,
     int? memoryTotal,
     int? storageTotal,
@@ -128,6 +133,7 @@ class DeviceInfo {
       isMIUI: isMIUI ?? this.isMIUI,
       isHMOS: isHMOS ?? this.isHMOS,
       isTablet: isTablet ?? this.isTablet,
+      isTV: isTV ?? this.isTV,
       manufacturer: manufacturer ?? this.manufacturer,
       model: model ?? this.model,
       os: os ?? this.os,
@@ -158,6 +164,7 @@ class DeviceInfo {
       'is_gms': isGMS,
       'is_hms': isHMS,
       'is_hmos': isHMOS,
+      'is_tv': isTV,
       'memory_total': memoryTotal,
       'storage_total': storageTotal,
       'storage_free': storageFree,
@@ -169,10 +176,9 @@ class DeviceInfo {
 
   @override
   String toString() {
-    final jsonToList =
-        toJson().entries.map((e) => '${e.key}: ${e.value}').join(', ');
+    final info = toJson().entries.map((e) => '${e.key}: ${e.value}').join(', ');
 
-    return 'DeviceInfo($jsonToList)';
+    return 'DeviceInfo($info)';
   }
 }
 
