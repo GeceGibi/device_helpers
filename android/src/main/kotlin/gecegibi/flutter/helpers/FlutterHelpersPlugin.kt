@@ -13,8 +13,9 @@ import android.net.Uri
 import android.os.*
 import android.provider.Settings
 import android.text.TextUtils
-import android.util.Log
-import androidx.annotation.NonNull
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
+import com.huawei.hms.api.HuaweiApiAvailability
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -36,7 +37,7 @@ class FlutterHelpersPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     private lateinit var context: Context
     private lateinit var activity: Activity
 
-    override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+    override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         context = flutterPluginBinding.applicationContext
 
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "gece.dev/helpers")
@@ -51,7 +52,7 @@ class FlutterHelpersPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {}
     override fun onDetachedFromActivity() {}
 
-    override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
+    override fun onMethodCall(call: MethodCall, result: Result) {
         when (call.method) {
             "get_idfa" -> getIdfa(result)
             "request_tracking_authorization" -> requestTrackingAuthorization(result)
@@ -67,7 +68,7 @@ class FlutterHelpersPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         }
     }
 
-    override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
+    override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         channel.setMethodCallHandler(null)
     }
 
@@ -87,10 +88,10 @@ class FlutterHelpersPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 val getInfoMethod: Method = advertisingIdClient.getMethod(
                     "getAdvertisingIdInfo", Context::class.java
                 )
-                val adInfo: Any = getInfoMethod.invoke(null, context)
-                var getIdMetHod: Method = adInfo.javaClass.getMethod("getId")
+                val adInfo: Any? = getInfoMethod.invoke(null, context)
+                val getIdMetHod: Method? = adInfo?.javaClass?.getMethod("getId")
 
-                result.success(if (adInfo != null) getIdMetHod(adInfo) else null)
+                result.success(if (adInfo != null && getIdMetHod != null) getIdMetHod(adInfo) else null)
             } catch (e: Exception) {
                 result.success(null)
             }
@@ -165,11 +166,11 @@ class FlutterHelpersPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         ) || Build.PRODUCT.contains("emulator") || Build.PRODUCT.contains("simulator");
     }
 
-    private fun getSystemProperty(prop: String): String? {
+    private fun getSystemProperty(property: String): String? {
         val line: String
         var input: BufferedReader? = null
         try {
-            val p = Runtime.getRuntime().exec("getprop $prop")
+            val p = Runtime.getRuntime().exec("getprop $property")
             input = BufferedReader(InputStreamReader(p.inputStream), 1024)
             line = input.readLine()
             input.close()
@@ -188,41 +189,13 @@ class FlutterHelpersPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     }
 
     private fun isGMSAvailable(): Boolean {
-        return try {
-            val googleApiAvailability =
-                Class.forName("com.google.android.gms.common.GoogleApiAvailability")
-            val getInstanceMethod: Method = googleApiAvailability.getMethod("getInstance")
-            val gmsObject: Any = getInstanceMethod.invoke(null)
-            val isGooglePlayServicesAvailableMethod: Method = gmsObject.javaClass.getMethod(
-                "isGooglePlayServicesAvailable", Context::class.java
-            )
-
-            // if response 0 -> ConnectionResult.SUCCESS
-            return isGooglePlayServicesAvailableMethod.invoke(gmsObject, context) as Int == 0
-        } catch (e: java.lang.Exception) {
-            false
-        }
+        val result = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context)
+        return ConnectionResult.SUCCESS == result
     }
 
     private fun isHMSAvailable(): Boolean {
-        return try {
-            val huaweiApiAvailability = Class.forName("com.huawei.hms.api.HuaweiApiAvailability")
-            val getInstanceMethod: Method = huaweiApiAvailability.getMethod("getInstance")
-            val hmsObject: Any = getInstanceMethod.invoke(null)
-            val isHuaweiMobileServicesAvailableMethod: Method = hmsObject.javaClass.getMethod(
-                "isHuaweiMobileServicesAvailable", Context::class.java
-            )
-
-            // if response 0 -> ConnectionResult.SUCCESS
-            return isHuaweiMobileServicesAvailableMethod.invoke(hmsObject, context) as Int == 0
-        } catch (e: java.lang.Exception) {
-            var tag = "### Huawei"
-            Log.w(tag, e.cause?.message ?: "-")
-            Log.w(tag, e.stackTrace.toString())
-            Log.w(tag, e.message ?: e.toString())
-
-            false
-        }
+        val result = HuaweiApiAvailability.getInstance().isHuaweiMobileServicesAvailable(context)
+        return ConnectionResult.SUCCESS == result
     }
 
     private fun getMemoryTotal(): Long {
@@ -254,16 +227,22 @@ class FlutterHelpersPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     }
 
     private fun isHMOS(): Boolean {
-        return try {
+        try {
             return Class.forName("ohos.app.Application") != null
-        } finally {
-            return false
+        } catch (e: Exception) {
+            // no-op
         }
+
+        return false
     }
 
     private fun isTV(): Boolean {
-        return (context.packageManager.hasSystemFeature(PackageManager.FEATURE_TELEVISION)
-                || context.packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK))
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            (context.packageManager.hasSystemFeature(PackageManager.FEATURE_TELEVISION)
+                    || context.packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK))
+        } else {
+            context.packageManager.hasSystemFeature(PackageManager.FEATURE_TELEVISION)
+        }
     }
 
     private fun getDeviceInfo(result: MethodChannel.Result) {
@@ -273,9 +252,9 @@ class FlutterHelpersPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 context.packageName, 0,
             );
 
-            var appVersion = packageInfo.versionName;
-            var appBuild = getLongVersionCode(packageInfo);
-            var appName = appInfo.loadLabel(context.packageManager).toString()
+            val appVersion = packageInfo.versionName;
+            val appBuild = getLongVersionCode(packageInfo);
+            val appName = appInfo.loadLabel(context.packageManager).toString()
 
             val info: MutableMap<String, Any> = hashMapOf(
                 "app_version" to appVersion,
