@@ -25,9 +25,9 @@ flutter:
         package: gece.dev.helpers
         pluginClass: DeviceHelpers
       ios:
-        pluginClass: FlutterHelpersPlugin
+        pluginClass: DeviceHelpers
       web:
-        pluginClass: FlutterHelpersWeb
+        pluginClass: DeviceHelpers
         fileName: flutter_helpers_web.dart
 
 

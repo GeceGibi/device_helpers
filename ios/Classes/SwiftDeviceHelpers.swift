@@ -3,11 +3,11 @@ import AdSupport
 import Flutter
 import UIKit
 
-public class SwiftFlutterHelpersPlugin: NSObject, FlutterPlugin {
+public class SwiftDeviceHelpers: NSObject, FlutterPlugin {
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "gece.dev/helpers", binaryMessenger: registrar.messenger())
-        let instance = SwiftFlutterHelpersPlugin()
+        let instance = SwiftDeviceHelpers()
         
         registrar.addMethodCallDelegate(instance, channel: channel)
         registrar.addApplicationDelegate(instance)
@@ -23,7 +23,7 @@ public class SwiftFlutterHelpersPlugin: NSObject, FlutterPlugin {
             openAppNotificationSettings()
             break;
             
-        case "device_info":
+        case "get_info":
             getDeviceInfo(result: result)
             break;
             
@@ -146,11 +146,7 @@ public class SwiftFlutterHelpersPlugin: NSObject, FlutterPlugin {
     }
     
     var isEmulator: Bool {
-        #if TARGET_OS_SIMULATOR
-            return false
-        #else
-            return true
-        #endif
+        return TARGET_OS_SIMULATOR != 0
     }
     
     var unameMachine: String {

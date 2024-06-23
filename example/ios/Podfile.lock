@@ -1,0 +1,22 @@
+PODS:
+  - device_helpers (1.0.0):
+    - Flutter
+  - Flutter (1.0.0)
+
+DEPENDENCIES:
+  - device_helpers (from `.symlinks/plugins/device_helpers/ios`)
+  - Flutter (from `Flutter`)
+
+EXTERNAL SOURCES:
+  device_helpers:
+    :path: ".symlinks/plugins/device_helpers/ios"
+  Flutter:
+    :path: Flutter
+
+SPEC CHECKSUMS:
+  device_helpers: c8c9eb5ada934f45687888283f0ca060496ca06f
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+
+PODFILE CHECKSUM: 819463e6a0290f5a72f145ba7cde16e8b6ef0796
+
+COCOAPODS: 1.15.2

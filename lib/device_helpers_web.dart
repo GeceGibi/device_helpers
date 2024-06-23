@@ -10,12 +10,12 @@ import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'device_helpers_platform_interface.dart';
 
 /// A web implementation of the HelpersPlatform of the Helpers plugin.
-class FlutterHelpersWeb extends FlutterHelpersPlatform {
+class DeviceHelpers extends FlutterHelpersPlatform {
   /// Constructs a HelpersWeb
-  FlutterHelpersWeb();
+  DeviceHelpers();
 
   static void registerWith(Registrar registrar) {
-    FlutterHelpersPlatform.instance = FlutterHelpersWeb();
+    FlutterHelpersPlatform.instance = DeviceHelpers();
   }
 
   @override
