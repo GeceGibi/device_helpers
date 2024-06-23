@@ -1,13 +1,13 @@
-import 'package:flutter_helpers/models.dart';
-import 'flutter_helpers_platform_interface.dart';
+import 'package:device_helpers/models.dart';
+import 'device_helpers_platform_interface.dart';
 
-export 'package:flutter_helpers/models.dart';
+export 'package:device_helpers/models.dart';
 
-class FlutterHelpers {
-  const FlutterHelpers._();
+class DeviceHelpers {
+  const DeviceHelpers._();
 
-  static Future<DeviceInfo> getDeviceInfo() {
-    return FlutterHelpersPlatform.instance.getDeviceInfo();
+  static Future<DeviceInfo> getInfo() {
+    return FlutterHelpersPlatform.instance.getInfo();
   }
 
   static Future<TrackingRequestStatus> requestTrackingAuthorization() {

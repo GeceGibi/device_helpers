@@ -1,7 +1,7 @@
-import 'package:flutter_helpers/models.dart';
+import 'package:device_helpers/models.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import 'flutter_helpers_method_channel.dart';
+import 'device_helpers_method_channel.dart';
 
 abstract class FlutterHelpersPlatform extends PlatformInterface {
   /// Constructs a HelpersPlatform.
@@ -60,7 +60,7 @@ abstract class FlutterHelpersPlatform extends PlatformInterface {
     );
   }
 
-  Future<DeviceInfo> getDeviceInfo() {
+  Future<DeviceInfo> getInfo() {
     throw UnimplementedError(
       'getDeviceInfo() has not been implemented.',
     );

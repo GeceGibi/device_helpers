@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-import 'package:flutter_helpers/flutter_helpers.dart';
+import 'package:device_helpers/device_helpers.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,12 +17,6 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   DeviceInfo? deviceInfo;
 
-  @override
-  void initState() {
-    super.initState();
-    initPlatformState();
-  }
-
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
     // Helpers.openAppSettings();
@@ -32,15 +26,21 @@ class _MyAppState extends State<MyApp> {
     //   Helpers.badgeUpdate(20);
     // });
 
-    FlutterHelpers.requestTrackingAuthorization().then((value) async {
-      print(await FlutterHelpers.getIdfa());
+    DeviceHelpers.requestTrackingAuthorization().then((value) async {
+      print(await DeviceHelpers.getIdfa());
     });
 
-    final info = await FlutterHelpers.getDeviceInfo();
+    final info = await DeviceHelpers.getInfo();
 
     setState(() {
       deviceInfo = info;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initPlatformState();
   }
 
   @override

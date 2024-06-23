@@ -1,6 +1,6 @@
-# helpers_example
+# example
 
-Demonstrates how to use the helpers plugin.
+A new Flutter project.
 
 ## Getting Started
 

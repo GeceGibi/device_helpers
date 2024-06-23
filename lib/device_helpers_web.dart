@@ -4,10 +4,10 @@
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html show window;
 
-import 'package:flutter_helpers/models.dart';
+import 'package:device_helpers/models.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
-import 'flutter_helpers_platform_interface.dart';
+import 'device_helpers_platform_interface.dart';
 
 /// A web implementation of the HelpersPlatform of the Helpers plugin.
 class FlutterHelpersWeb extends FlutterHelpersPlatform {
@@ -43,7 +43,7 @@ class FlutterHelpersWeb extends FlutterHelpersPlatform {
   Future<void> openAppNotificationSettings() async {}
 
   @override
-  Future<DeviceInfo> getDeviceInfo() async {
+  Future<DeviceInfo> getInfo() async {
     return DeviceInfo.fallback().copyWith(
       appName: html.window.navigator.appName,
       appVersion: html.window.navigator.appVersion,

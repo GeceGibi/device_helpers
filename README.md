@@ -3,20 +3,7 @@
 
 ---
 
-<h3>Ads Tracking</h3>
 
-<h4>Android</h4> 
-
-Should add do `android/app/build.gradle` to
-
-```gradle
-dependencies {
-    ...
-    implementation 'com.google.android.gms:play-services-ads-identifier:18.0.1' // GMS
-    implementation 'com.huawei.hms:hwid:6.9.0.301' // HMS
-
-}
-```
 
 <h4>For huawei</h4> 
 
