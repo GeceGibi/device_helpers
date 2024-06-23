@@ -44,7 +44,7 @@ class DeviceHelpers extends FlutterHelpersPlatform {
 
   @override
   Future<DeviceInfo> getInfo() async {
-    return DeviceInfo.fallback().copyWith(
+    return DeviceInfo().copyWith(
       appName: html.window.navigator.appName,
       appVersion: html.window.navigator.appVersion,
       appBuild: html.window.navigator.appCodeName,

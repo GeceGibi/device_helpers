@@ -1,185 +1,44 @@
 import 'dart:io';
 
-class DeviceInfo {
-  DeviceInfo({
-    required this.appBuild,
-    required this.appBundle,
-    required this.appName,
-    required this.appVersion,
-    required this.brand,
-    required this.isEmulator,
-    required this.isGMS,
-    required this.isHMS,
-    required this.isMIUI,
-    required this.isHMOS,
-    required this.isTV,
-    required this.isTablet,
-    required this.manufacturer,
-    required this.model,
-    required this.osVersion,
-    required this.memoryTotal,
-    required this.storageFree,
-    required this.storageTotal,
-    required this.uuid,
-    required this.os,
-    required this.sdkVersion,
-    required this.numberOfProcessors,
-  });
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  DeviceInfo.fromJson(Map<String, dynamic> json)
-      : manufacturer = json['manufacturer'],
-        brand = json['brand'],
-        model = json['model'],
-        uuid = json['uuid'],
-        appVersion = json['app_version'],
-        appBundle = json['app_bundle'],
-        appBuild = json['app_build'],
-        appName = json['app_name'],
-        os = Platform.operatingSystem,
-        sdkVersion = Platform.version,
-        numberOfProcessors = Platform.numberOfProcessors,
-        osVersion = json['os_version'],
-        isEmulator = json['is_emulator'],
-        isTablet = json['is_tablet'],
-        isMIUI = json['is_miui'],
-        isGMS = json['is_gms'],
-        isHMS = json['is_hms'],
-        isHMOS = json['is_hmos'],
-        isTV = json['is_tv'],
-        memoryTotal = json['memory_total'],
-        storageTotal = json['storage_total'],
-        storageFree = json['storage_free'];
+part 'models.g.dart';
+part 'models.freezed.dart';
 
-  DeviceInfo.fallback()
-      : appVersion = "",
-        appBundle = "",
-        appBuild = "",
-        appName = "",
-        manufacturer = "",
-        os = "",
-        osVersion = "",
-        sdkVersion = "",
-        numberOfProcessors = 0,
-        brand = "",
-        model = "",
-        uuid = "",
-        isEmulator = false,
-        isTablet = false,
-        isMIUI = false,
-        isGMS = false,
-        isHMS = false,
-        isHMOS = false,
-        isTV = false,
-        memoryTotal = 0,
-        storageTotal = 0,
-        storageFree = 0;
+@freezed
+class DeviceInfo with _$DeviceInfo {
+  factory DeviceInfo({
+    @Default('') String manufacturer,
+    @Default('') String brand,
+    @Default('') String model,
+    @Default('') String uuid,
+    @Default('') @JsonKey(name: 'app_version') String appVersion,
+    @Default('') @JsonKey(name: 'app_bundle') String appBundle,
+    @Default('') @JsonKey(name: 'app_build') String appBuild,
+    @Default('') @JsonKey(name: 'app_name') String appName,
+    @Default('') String os,
+    @Default('') @JsonKey(name: 'os_version') String osVersion,
+    @Default('') @JsonKey(name: 'sdk_version') String sdkVersion,
+    @Default(false) @JsonKey(name: 'is_emulator') bool isEmulator,
+    @Default(false) @JsonKey(name: 'is_tablet') bool isTablet,
+    @Default(false) @JsonKey(name: 'is_miui') bool isMIUI,
+    @Default(false) @JsonKey(name: 'is_gms') bool isGMS,
+    @Default(false) @JsonKey(name: 'is_hms') bool isHMS,
+    @Default(false) @JsonKey(name: 'is_hmos') bool isHMOS,
+    @Default(false) @JsonKey(name: 'is_tv') bool isTV,
+    @Default(0) @JsonKey(name: 'number_of_processors') int numberOfProcessors,
+    @Default(0) @JsonKey(name: 'memory_total') int memoryTotal,
+    @Default(0) @JsonKey(name: 'storage_total') int storageTotal,
+    @Default(0) @JsonKey(name: 'storage_free') int storageFree,
+  }) = _DeviceInfo;
 
-  final String manufacturer;
-  final String brand;
-  final String model;
-  final String uuid;
-  final String appVersion;
-  final String appBundle;
-  final String appBuild;
-  final String appName;
-  final String os;
-  final String osVersion;
-  final String sdkVersion;
-  final bool isEmulator;
-  final bool isTablet;
-  final bool isMIUI;
-  final bool isGMS;
-  final bool isHMS;
-  final bool isHMOS;
-  final bool isTV;
-  final int numberOfProcessors;
-  final int memoryTotal;
-  final int storageTotal;
-  final int storageFree;
-
-  DeviceInfo copyWith({
-    String? manufacturer,
-    String? brand,
-    String? model,
-    String? uuid,
-    String? appVersion,
-    String? appBundle,
-    String? appBuild,
-    String? appName,
-    String? osVersion,
-    String? os,
-    String? sdkVersion,
-    bool? isEmulator,
-    bool? isTablet,
-    bool? isMIUI,
-    bool? isGMS,
-    bool? isHMS,
-    bool? isHMOS,
-    bool? isTV,
-    int? numberOfProcessors,
-    int? memoryTotal,
-    int? storageTotal,
-    int? storageFree,
-  }) {
-    return DeviceInfo(
-      appBuild: appBuild ?? this.appBuild,
-      appBundle: appBundle ?? this.appBundle,
-      appName: appName ?? this.appName,
-      appVersion: appVersion ?? this.appVersion,
-      brand: brand ?? this.brand,
-      isEmulator: isEmulator ?? this.isEmulator,
-      isGMS: isGMS ?? this.isGMS,
-      isHMS: isHMS ?? this.isHMS,
-      isMIUI: isMIUI ?? this.isMIUI,
-      isHMOS: isHMOS ?? this.isHMOS,
-      isTablet: isTablet ?? this.isTablet,
-      isTV: isTV ?? this.isTV,
-      manufacturer: manufacturer ?? this.manufacturer,
-      model: model ?? this.model,
-      os: os ?? this.os,
-      sdkVersion: sdkVersion ?? this.sdkVersion,
-      numberOfProcessors: numberOfProcessors ?? this.numberOfProcessors,
-      osVersion: osVersion ?? this.osVersion,
-      memoryTotal: memoryTotal ?? this.memoryTotal,
-      storageFree: storageFree ?? this.storageFree,
-      storageTotal: storageTotal ?? this.storageTotal,
-      uuid: uuid ?? this.uuid,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'manufacturer': manufacturer,
-      'brand': brand,
-      'model': model,
-      'uuid': uuid,
-      'app_version': appVersion,
-      'app_bundle': appBundle,
-      'app_build': appBuild,
-      'app_name': appName,
-      'os_version': osVersion,
-      'is_emulator': isEmulator,
-      'is_tablet': isTablet,
-      'is_miui': isMIUI,
-      'is_gms': isGMS,
-      'is_hms': isHMS,
-      'is_hmos': isHMOS,
-      'is_tv': isTV,
-      'memory_total': memoryTotal,
-      'storage_total': storageTotal,
-      'storage_free': storageFree,
-      'number_of_processors': numberOfProcessors,
-      'os': os,
-      'sdk_version': sdkVersion,
-    };
-  }
-
-  @override
-  String toString() {
-    final info = toJson().entries.map((e) => '${e.key}: ${e.value}').join(', ');
-
-    return 'DeviceInfo($info)';
-  }
+  factory DeviceInfo.fromJson(Map<String, Object?> json) =>
+      _$DeviceInfoFromJson({
+        ...json,
+        'number_of_processors': Platform.numberOfProcessors,
+        'sdk_version': Platform.version,
+        'os': Platform.operatingSystem,
+      });
 }
 
 class DeviceInfoError implements Exception {
