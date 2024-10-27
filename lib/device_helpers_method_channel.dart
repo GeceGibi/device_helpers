@@ -1,8 +1,7 @@
+import 'package:device_helpers/device_helpers_platform_interface.dart';
+import 'package:device_helpers/models.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:device_helpers/models.dart';
-
-import 'device_helpers_platform_interface.dart';
 
 /// An implementation of [HelpersPlatform] that uses method channels.
 class MethodChannelHelpers extends FlutterHelpersPlatform {
@@ -19,7 +18,7 @@ class MethodChannelHelpers extends FlutterHelpersPlatform {
 
       return DeviceInfo.fromJson(data!);
     } on PlatformException catch (e) {
-      throw DeviceInfoError(e.message ?? "Ups..");
+      throw DeviceInfoError(e.message ?? 'Ups..');
     }
   }
 

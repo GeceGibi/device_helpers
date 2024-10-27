@@ -1,7 +1,6 @@
+import 'package:device_helpers/device_helpers_method_channel.dart';
 import 'package:device_helpers/models.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-
-import 'device_helpers_method_channel.dart';
 
 abstract class FlutterHelpersPlatform extends PlatformInterface {
   /// Constructs a HelpersPlatform.

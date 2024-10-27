@@ -17,10 +17,12 @@ public class SwiftDeviceHelpers: NSObject, FlutterPlugin {
         switch call.method {
         case "app_settings":
             openAppSettings()
+            result(nil)
             break;
             
         case "app_notification_settings":
             openAppNotificationSettings()
+            result(nil)
             break;
             
         case "get_info":
@@ -28,13 +30,16 @@ public class SwiftDeviceHelpers: NSObject, FlutterPlugin {
             break;
             
         case "badge_update":
-            updateBadge(badge: call.arguments as! Int)
+            if let badge = call.arguments as? Int {
+                updateBadge(badge: badge)
+            }
+            result(nil)
             break;
             
         case "update_badge_request":
             updateBadgeRequest(result: result)
             break;
-    
+            
         case "get_idfa":
             getIdfa(result: result)
             break;
@@ -50,44 +55,35 @@ public class SwiftDeviceHelpers: NSObject, FlutterPlugin {
     
     public func applicationDidBecomeActive(_ application: UIApplication) { }
     
-    ///
-    /// TRACKING REQUEST & IDFA
-    ///
-    func getIdfa(result: @escaping FlutterResult) {
+    // MARK: - Tracking Request & IDFA
+    private func getIdfa(result: @escaping FlutterResult) {
         if #available(iOS 14.0, *) {
-            if ATTrackingManager.trackingAuthorizationStatus == .authorized  {
-                result(ASIdentifierManager.shared().advertisingIdentifier.uuidString)
-            } else {
-                result(nil)
-            }
-        } else if ASIdentifierManager.shared().isAdvertisingTrackingEnabled {
-            result(ASIdentifierManager.shared().advertisingIdentifier.uuidString)
+            result(ATTrackingManager.trackingAuthorizationStatus == .authorized ?
+                   ASIdentifierManager.shared().advertisingIdentifier.uuidString : nil)
         } else {
-            result(nil)
+            result(ASIdentifierManager.shared().isAdvertisingTrackingEnabled ?
+                   ASIdentifierManager.shared().advertisingIdentifier.uuidString : nil)
         }
     }
     
     /*
-    case notDetermined = 0
-    case restricted = 1
-    case denied = 2
-    case authorized = 3
-    case notSupported = 4
+     case notDetermined = 0
+     case restricted = 1
+     case denied = 2
+     case authorized = 3
+     case notSupported = 4
      */
     private func requestTrackingAuthorization(result: @escaping FlutterResult) {
         if #available(iOS 14, *) {
-            // DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {}
-            ATTrackingManager.requestTrackingAuthorization(completionHandler: { status in
+            ATTrackingManager.requestTrackingAuthorization { status in
                 result(Int(status.rawValue))
-            })
+            }
         } else {
-            result(Int(4))
+            result(4) // notSupported
         }
     }
     
-    ///
-    /// OPEN DEVICE SETTINGS SCREENS
-    ///
+    // MARK: - Open Device Settings Screens
     private func openAppSettings(){
         if let url = URL(string: UIApplication.openSettingsURLString) {
             UIApplication.shared.open(url)
@@ -104,16 +100,12 @@ public class SwiftDeviceHelpers: NSObject, FlutterPlugin {
         }
     }
     
-    ///
-    /// BADGE
-    ///
+    // MARK: - Badge
     private var isSupportedBadge = false
     private func updateBadgeRequest(result: @escaping FlutterResult){
-        UNUserNotificationCenter.current().requestAuthorization(options: .badge) {
-            (granted, error) in
-                self.isSupportedBadge = error == nil
-                result(error == nil)
-            
+        UNUserNotificationCenter.current().requestAuthorization(options: .badge) { granted, error in
+            self.isSupportedBadge = error == nil
+            result(granted)
         }
     }
     
@@ -124,29 +116,18 @@ public class SwiftDeviceHelpers: NSObject, FlutterPlugin {
         
     }
     
-    /// ----------
-    /// DEVICE INFO
-    /// ----------
-    var totalDiskSpaceInBytes:Int64 {
-        guard let systemAttributes = try? FileManager.default.attributesOfFileSystem(forPath: NSHomeDirectory() as String),
-              let space = (systemAttributes[FileAttributeKey.systemSize] as? NSNumber)?.int64Value else { return 0 }
-        return space
+    // MARK: - Device Info
+    private var totalDiskSpaceInBytes: Int64 {
+        (try? FileManager.default.attributesOfFileSystem(forPath: NSHomeDirectory())[.systemSize] as? NSNumber)?.int64Value ?? 0
     }
     
-    var freeDiskSpaceInBytes:Int64 {
-        get {
-            do {
-                let systemAttributes = try FileManager.default.attributesOfFileSystem(forPath: NSHomeDirectory() as String)
-                let freeSpace = (systemAttributes[FileAttributeKey.systemFreeSize] as? NSNumber)?.int64Value
-                return freeSpace!
-            } catch {
-                return 0
-            }
-        }
+    private var freeDiskSpaceInBytes: Int64 {
+        (try? FileManager.default.attributesOfFileSystem(forPath: NSHomeDirectory())[.systemFreeSize] as? NSNumber)?.int64Value ?? 0
     }
+    
     
     var isEmulator: Bool {
-        return TARGET_OS_SIMULATOR != 0
+        TARGET_OS_SIMULATOR != 0
     }
     
     var unameMachine: String {
@@ -157,45 +138,36 @@ public class SwiftDeviceHelpers: NSObject, FlutterPlugin {
                 ptr in String.init(validatingUTF8: ptr)
             }
         }
+        
         return machine ?? "N/A"
     }
     
     
     private func getDeviceInfo(result: FlutterResult) {
-        // Proxy
-        let info = Bundle.main.infoDictionary
+        let info = Bundle.main.infoDictionary ?? [:]
         
-        let appVersion = info?["CFBundleShortVersionString"] as? String
-        let appBuild = info?["CFBundleVersion"] as? String
-        let appName = info?["CFBundleDisplayName"] as? String
-        let appBundle = Bundle.main.bundleIdentifier
-        let isTablet = UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad
-        let uuid = UIDevice.current.identifierForVendor?.uuidString
-        let systemVersion = UIDevice.current.systemVersion
-        let manufacturer = "Apple"
-        let brand = isTablet ? "iPad" : "iPhone"
-        let model = unameMachine
-        
-        result([
-            "app_version": appVersion!,
-            "app_build": appBuild!,
-            "app_name": appName!,
-            "app_bundle": appBundle!,
-            "is_tablet": isTablet,
-            "uuid": uuid!,
-            "os_version": systemVersion,
-            "manufacturer": manufacturer,
-            "brand": brand,
-            "model": model,
+        let deviceInfo: [String: Any] = [
+            "app_version": info["CFBundleShortVersionString"] as? String ?? "N/A",
+            "app_build": info["CFBundleVersion"] as? String ?? "N/A",
+            "app_name": info["CFBundleDisplayName"] as? String ?? "N/A",
+            "app_bundle": Bundle.main.bundleIdentifier ?? "N/A",
+            "is_tablet": UIDevice.current.userInterfaceIdiom == .pad,
+            "uuid": UIDevice.current.identifierForVendor?.uuidString ?? "N/A",
+            "os_version": UIDevice.current.systemVersion,
+            "manufacturer": "Apple",
+            "brand": UIDevice.current.userInterfaceIdiom == .pad ? "iPad" : "iPhone",
+            "model": unameMachine,
             "is_emulator": isEmulator,
+            "memory_total": Int(ProcessInfo.processInfo.physicalMemory),
+            "storage_total": totalDiskSpaceInBytes,
+            "storage_free": freeDiskSpaceInBytes,
             "is_miui": false,
             "is_gms": false,
             "is_hms": false,
             "is_hmos": false,
             "is_tv": false,
-            "memory_total": Int(ProcessInfo.processInfo.physicalMemory),
-            "storage_total": totalDiskSpaceInBytes,
-            "storage_free" : freeDiskSpaceInBytes,
-        ])
+        ]
+        
+        result(deviceInfo)
     }
 }

@@ -4,10 +4,9 @@
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html show window;
 
+import 'package:device_helpers/device_helpers_platform_interface.dart';
 import 'package:device_helpers/models.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
-
-import 'device_helpers_platform_interface.dart';
 
 /// A web implementation of the HelpersPlatform of the Helpers plugin.
 class DeviceHelpers extends FlutterHelpersPlatform {

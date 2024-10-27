@@ -8,25 +8,24 @@ import android.provider.Settings
 
 class Routing(private val activity: Activity) {
     fun openAppSettings() {
-        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-        intent.data = Uri.fromParts("package", activity.packageName, null)
-        activity.startActivity(intent)
+        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+            data = Uri.fromParts("package", activity.packageName, null)
+            activity.startActivity(this)
+        }
     }
 
     fun openAppNotificationSettings() {
-        val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(
-                Settings.EXTRA_APP_PACKAGE, activity.packageName
-            )
-        } else {
-            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).setData(
-                Uri.fromParts(
-                    "package", activity.packageName, null
-                )
-            )
+        val intent = Intent(
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) Settings.ACTION_APP_NOTIFICATION_SETTINGS
+            else Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+        ).apply {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                putExtra(Settings.EXTRA_APP_PACKAGE, activity.packageName)
+            } else {
+                data = Uri.fromParts("package", activity.packageName, null)
+            }
         }
-
-        activity.startActivity(intent);
+        activity.startActivity(intent)
     }
 
 }

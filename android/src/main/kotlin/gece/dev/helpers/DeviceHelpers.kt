@@ -1,8 +1,5 @@
 package gece.dev.helpers
 
-import android.app.Activity
-import android.content.Context
-import android.util.Log
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -16,14 +13,11 @@ import io.flutter.plugin.common.MethodChannel.Result
 class DeviceHelpers : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     private lateinit var channel: MethodChannel
-
-    ///
     private lateinit var idfa: Idfa;
     private lateinit var device: DeviceInfo;
-    private lateinit var routing: Routing;
+    private var routing: Routing? = null
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-
         val context = flutterPluginBinding.applicationContext
 
         idfa = Idfa(context);
@@ -42,30 +36,38 @@ class DeviceHelpers : FlutterPlugin, MethodCallHandler, ActivityAware {
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
-        // no-op
+        routing = null
     }
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
-        // no-op
+        routing = Routing(binding.activity)
     }
 
     override fun onDetachedFromActivity() {
-        // no-op
+        routing = null
     }
 
     override fun onMethodCall(call: MethodCall, result: Result) {
-        Log.d("LOL", call.method)
+        // Log.d("DeviceHelpers", "Received method call: ${call.method}")
 
         when (call.method) {
             "get_idfa" -> idfa.getId(result)
             "request_tracking_authorization" -> requestTrackingAuthorization(result)
+            "app_settings" -> routing?.openAppSettings() ?: result.error(
+                "UNAVAILABLE",
+                "Activity is not attached.",
+                null
+            )
 
-            "app_settings" -> routing.openAppSettings()
-            "app_notification_settings" -> routing.openAppNotificationSettings()
+            "app_notification_settings" -> routing?.openAppNotificationSettings()
+                ?: result.error(
+                    "UNAVAILABLE",
+                    "Activity is not attached.",
+                    null
+                )
 
             "update_badge_request" -> result.success(false)
             "badge_update" -> updateBadge(call.arguments as Int)
-
             "get_info" -> device.info(result)
             else -> result.notImplemented()
         }

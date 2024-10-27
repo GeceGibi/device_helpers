@@ -1,5 +1,5 @@
+import 'package:device_helpers/device_helpers_platform_interface.dart';
 import 'package:device_helpers/models.dart';
-import 'device_helpers_platform_interface.dart';
 
 export 'package:device_helpers/models.dart';
 
