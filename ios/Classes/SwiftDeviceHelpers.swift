@@ -2,6 +2,7 @@ import AppTrackingTransparency
 import AdSupport
 import Flutter
 import UIKit
+#import <TargetConditionals.h>
 
 public class SwiftDeviceHelpers: NSObject, FlutterPlugin {
     
@@ -127,7 +128,11 @@ public class SwiftDeviceHelpers: NSObject, FlutterPlugin {
     
     
     var isEmulator: Bool {
-        TARGET_OS_SIMULATOR != 0
+        #if targetEnvironment(simulator)
+            return true
+        #else
+            return false
+        #endif
     }
     
     var unameMachine: String {
