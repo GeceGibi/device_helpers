@@ -2,7 +2,6 @@ import AppTrackingTransparency
 import AdSupport
 import Flutter
 import UIKit
-#import <TargetConditionals.h>
 
 public class SwiftDeviceHelpers: NSObject, FlutterPlugin {
     
