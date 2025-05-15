@@ -6,7 +6,7 @@ part 'models.g.dart';
 part 'models.freezed.dart';
 
 @freezed
-class DeviceInfo with _$DeviceInfo {
+abstract class DeviceInfo with _$DeviceInfo {
   factory DeviceInfo({
     @Default('') String manufacturer,
     @Default('') String brand,
