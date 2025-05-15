@@ -6,8 +6,7 @@ part of 'models.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$DeviceInfoImpl _$$DeviceInfoImplFromJson(Map<String, dynamic> json) =>
-    _$DeviceInfoImpl(
+_DeviceInfo _$DeviceInfoFromJson(Map<String, dynamic> json) => _DeviceInfo(
       manufacturer: json['manufacturer'] as String? ?? '',
       brand: json['brand'] as String? ?? '',
       model: json['model'] as String? ?? '',
@@ -32,7 +31,7 @@ _$DeviceInfoImpl _$$DeviceInfoImplFromJson(Map<String, dynamic> json) =>
       storageFree: (json['storage_free'] as num?)?.toInt() ?? 0,
     );
 
-Map<String, dynamic> _$$DeviceInfoImplToJson(_$DeviceInfoImpl instance) =>
+Map<String, dynamic> _$DeviceInfoToJson(_DeviceInfo instance) =>
     <String, dynamic>{
       'manufacturer': instance.manufacturer,
       'brand': instance.brand,
