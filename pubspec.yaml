@@ -1,6 +1,6 @@
 name: device_helpers
 description: A Flutter plugin for device information and utilities.
-version: 1.4.0+1
+version: 1.5.0+2
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
