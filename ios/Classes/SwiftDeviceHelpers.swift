@@ -232,7 +232,7 @@ private extension SwiftDeviceHelpers {
         if #available(iOS 14, *) {
             ATTrackingManager.requestTrackingAuthorization { status in
                 DispatchQueue.main.async {
-                    result(TrackingStatus(rawValue: status.rawValue)?.rawValue ?? TrackingStatus.notSupported.rawValue)
+                    result(TrackingStatus(rawValue: Int(status.rawValue))?.rawValue ?? TrackingStatus.notSupported.rawValue)
                 }
             }
         } else {
