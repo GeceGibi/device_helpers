@@ -2,129 +2,138 @@ import AppTrackingTransparency
 import AdSupport
 import Flutter
 import UIKit
+import UserNotifications
 
+// MARK: - Device Info Model
+private struct DeviceInfo {
+    let appVersion: String
+    let appBuild: String
+    let appName: String
+    let appBundle: String
+    let isTablet: Bool
+    let uuid: String
+    let osVersion: String
+    let manufacturer: String
+    let brand: String
+    let model: String
+    let isEmulator: Bool
+    let isMiui: Bool
+    let isGms: Bool
+    let isHms: Bool
+    let isHmos: Bool
+    let isTv: Bool
+    
+    var toDictionary: [String: Any] {
+        return [
+            "app_version": appVersion,
+            "app_build": appBuild,
+            "app_name": appName,
+            "app_bundle": appBundle,
+            "is_tablet": isTablet,
+            "uuid": uuid,
+            "os_version": osVersion,
+            "manufacturer": manufacturer,
+            "brand": brand,
+            "model": model,
+            "is_emulator": isEmulator,
+            "is_miui": isMiui,
+            "is_gms": isGms,
+            "is_hms": isHms,
+            "is_hmos": isHmos,
+            "is_tv": isTv
+        ]
+    }
+}
+
+// MARK: - Tracking Authorization Status
+private enum TrackingStatus: Int {
+    case notDetermined = 0
+    case restricted = 1
+    case denied = 2
+    case authorized = 3
+    case notSupported = 4
+}
+
+// MARK: - Main Plugin Class
 public class SwiftDeviceHelpers: NSObject, FlutterPlugin {
     
+    // MARK: - Properties
+    private var isBadgeSupported = false
+    
+    // MARK: - Plugin Registration
     public static func register(with registrar: FlutterPluginRegistrar) {
-        let channel = FlutterMethodChannel(name: "gece.dev/helpers", binaryMessenger: registrar.messenger())
+        let channel = FlutterMethodChannel(
+            name: "gece.dev/helpers",
+            binaryMessenger: registrar.messenger()
+        )
         let instance = SwiftDeviceHelpers()
-        
         registrar.addMethodCallDelegate(instance, channel: channel)
         registrar.addApplicationDelegate(instance)
     }
     
+    // MARK: - Method Channel Handler
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch call.method {
         case "app_settings":
             openAppSettings()
             result(nil)
-            break;
             
         case "app_notification_settings":
             openAppNotificationSettings()
             result(nil)
-            break;
             
         case "get_info":
             getDeviceInfo(result: result)
-            break;
             
         case "badge_update":
-            if let badge = call.arguments as? Int {
-                updateBadge(badge: badge)
-            }
-            result(nil)
-            break;
+            handleBadgeUpdate(call: call, result: result)
             
         case "update_badge_request":
             updateBadgeRequest(result: result)
-            break;
             
         case "get_idfa":
             getIdfa(result: result)
-            break;
             
         case "request_tracking_authorization":
             requestTrackingAuthorization(result: result)
-            break;
             
         default:
             result(FlutterMethodNotImplemented)
         }
     }
     
-    public func applicationDidBecomeActive(_ application: UIApplication) { }
+    // MARK: - Application Delegate
+    public func applicationDidBecomeActive(_ application: UIApplication) {
+        // Additional operations can be added here if needed
+    }
+}
+
+// MARK: - Settings Management
+private extension SwiftDeviceHelpers {
     
-    // MARK: - Tracking Request & IDFA
-    private func getIdfa(result: @escaping FlutterResult) {
-        if #available(iOS 14.0, *) {
-            result(ATTrackingManager.trackingAuthorizationStatus == .authorized ?
-                   ASIdentifierManager.shared().advertisingIdentifier.uuidString : nil)
-        } else {
-            result(ASIdentifierManager.shared().isAdvertisingTrackingEnabled ?
-                   ASIdentifierManager.shared().advertisingIdentifier.uuidString : nil)
+    func openAppSettings() {
+        guard let url = URL(string: UIApplication.openSettingsURLString) else {
+            print("Error: Could not create settings URL")
+            return
         }
+        UIApplication.shared.open(url)
     }
     
-    /*
-     case notDetermined = 0
-     case restricted = 1
-     case denied = 2
-     case authorized = 3
-     case notSupported = 4
-     */
-    private func requestTrackingAuthorization(result: @escaping FlutterResult) {
-        if #available(iOS 14, *) {
-            ATTrackingManager.requestTrackingAuthorization { status in
-                result(Int(status.rawValue))
-            }
-        } else {
-            result(4) // notSupported
-        }
-    }
-    
-    // MARK: - Open Device Settings Screens
-    private func openAppSettings(){
-        if let url = URL(string: UIApplication.openSettingsURLString) {
-            UIApplication.shared.open(url)
-        }
-    }
-    
-    private func openAppNotificationSettings(){
+    func openAppNotificationSettings() {
         if #available(iOS 16.0, *) {
-            if let url = URL(string: UIApplication.openNotificationSettingsURLString) {
-                UIApplication.shared.open(url)
+            guard let url = URL(string: UIApplication.openNotificationSettingsURLString) else {
+                print("Error: Could not create notification settings URL")
+                return
             }
+            UIApplication.shared.open(url)
         } else {
             openAppSettings()
         }
     }
-    
-    // MARK: - Badge
-    private var isSupportedBadge = false
-    private func updateBadgeRequest(result: @escaping FlutterResult){
-        UNUserNotificationCenter.current().requestAuthorization(options: .badge) { granted, error in
-            self.isSupportedBadge = error == nil
-            result(granted)
-        }
-    }
-    
-    private func updateBadge(badge: Int) {
-        if (isSupportedBadge) {
-            UIApplication.shared.applicationIconBadgeNumber = badge
-        }
-        
-    }
-    
-    // MARK: - Device Info
-    private var totalDiskSpaceInBytes: Int64 {
-        (try? FileManager.default.attributesOfFileSystem(forPath: NSHomeDirectory())[.systemSize] as? NSNumber)?.int64Value ?? 0
-    }
-    
-    private var freeDiskSpaceInBytes: Int64 {
-        (try? FileManager.default.attributesOfFileSystem(forPath: NSHomeDirectory())[.systemFreeSize] as? NSNumber)?.int64Value ?? 0
-    }
-    
+}
+
+// MARK: - Device Information
+private extension SwiftDeviceHelpers {
     
     var isEmulator: Bool {
         #if targetEnvironment(simulator)
@@ -134,44 +143,100 @@ public class SwiftDeviceHelpers: NSObject, FlutterPlugin {
         #endif
     }
     
-    var unameMachine: String {
+    var deviceModel: String {
         var utsnameInstance = utsname()
         uname(&utsnameInstance)
-        let machine: String? = withUnsafePointer(to: &utsnameInstance.machine) {
-            $0.withMemoryRebound(to: CChar.self, capacity: 1) {
-                ptr in String.init(validatingUTF8: ptr)
+        
+        return withUnsafePointer(to: &utsnameInstance.machine) { pointer in
+            pointer.withMemoryRebound(to: CChar.self, capacity: 1) { charPointer in
+                String(validatingUTF8: charPointer) ?? "Unknown"
             }
         }
-        
-        return machine ?? "N/A"
     }
     
-    
-    private func getDeviceInfo(result: FlutterResult) {
+    func getDeviceInfo(result: @escaping FlutterResult) {
         let info = Bundle.main.infoDictionary ?? [:]
+        let device = UIDevice.current
         
-        let deviceInfo: [String: Any] = [
-            "app_version": info["CFBundleShortVersionString"] as? String ?? "N/A",
-            "app_build": info["CFBundleVersion"] as? String ?? "N/A",
-            "app_name": info["CFBundleDisplayName"] as? String ?? "N/A",
-            "app_bundle": Bundle.main.bundleIdentifier ?? "N/A",
-            "is_tablet": UIDevice.current.userInterfaceIdiom == .pad,
-            "uuid": UIDevice.current.identifierForVendor?.uuidString ?? "N/A",
-            "os_version": UIDevice.current.systemVersion,
-            "manufacturer": "Apple",
-            "brand": UIDevice.current.userInterfaceIdiom == .pad ? "iPad" : "iPhone",
-            "model": unameMachine,
-            "is_emulator": isEmulator,
-            "memory_total": Int(ProcessInfo.processInfo.physicalMemory),
-            "storage_total": totalDiskSpaceInBytes,
-            "storage_free": freeDiskSpaceInBytes,
-            "is_miui": false,
-            "is_gms": false,
-            "is_hms": false,
-            "is_hmos": false,
-            "is_tv": false,
-        ]
+        let deviceInfo = DeviceInfo(
+            appVersion: info["CFBundleShortVersionString"] as? String ?? "N/A",
+            appBuild: info["CFBundleVersion"] as? String ?? "N/A",
+            appName: info["CFBundleDisplayName"] as? String ?? "N/A",
+            appBundle: Bundle.main.bundleIdentifier ?? "N/A",
+            isTablet: device.userInterfaceIdiom == .pad,
+            uuid: device.identifierForVendor?.uuidString ?? "N/A",
+            osVersion: device.systemVersion,
+            manufacturer: "Apple",
+            brand: device.userInterfaceIdiom == .pad ? "iPad" : "iPhone",
+            model: deviceModel,
+            isEmulator: isEmulator,
+            isMiui: false,
+            isGms: false,
+            isHms: false,
+            isHmos: false,
+            isTv: false
+        )
         
-        result(deviceInfo)
+        result(deviceInfo.toDictionary)
+    }
+}
+
+// MARK: - Badge Management
+private extension SwiftDeviceHelpers {
+    
+    func handleBadgeUpdate(call: FlutterMethodCall, result: @escaping FlutterResult) {
+        guard let badge = call.arguments as? Int else {
+            result(FlutterError(code: "INVALID_ARGUMENT", 
+                              message: "Badge must be an integer", 
+                              details: nil))
+            return
+        }
+        updateBadge(badge: badge)
+        result(nil)
+    }
+    
+    func updateBadgeRequest(result: @escaping FlutterResult) {
+        UNUserNotificationCenter.current().requestAuthorization(options: .badge) { [weak self] granted, error in
+            DispatchQueue.main.async {
+                self?.isBadgeSupported = error == nil
+                result(granted)
+            }
+        }
+    }
+    
+    func updateBadge(badge: Int) {
+        guard isBadgeSupported else {
+            print("Warning: Badge updates not supported")
+            return
+        }
+        UIApplication.shared.applicationIconBadgeNumber = badge
+    }
+}
+
+// MARK: - Tracking Authorization
+private extension SwiftDeviceHelpers {
+    
+    func getIdfa(result: @escaping FlutterResult) {
+        if #available(iOS 14.0, *) {
+            let isAuthorized = ATTrackingManager.trackingAuthorizationStatus == .authorized
+            let idfa = isAuthorized ? ASIdentifierManager.shared().advertisingIdentifier.uuidString : nil
+            result(idfa)
+        } else {
+            let isEnabled = ASIdentifierManager.shared().isAdvertisingTrackingEnabled
+            let idfa = isEnabled ? ASIdentifierManager.shared().advertisingIdentifier.uuidString : nil
+            result(idfa)
+        }
+    }
+    
+    func requestTrackingAuthorization(result: @escaping FlutterResult) {
+        if #available(iOS 14, *) {
+            ATTrackingManager.requestTrackingAuthorization { status in
+                DispatchQueue.main.async {
+                    result(TrackingStatus(rawValue: status.rawValue)?.rawValue ?? TrackingStatus.notSupported.rawValue)
+                }
+            }
+        } else {
+            result(TrackingStatus.notSupported.rawValue)
+        }
     }
 }

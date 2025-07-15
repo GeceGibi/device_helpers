@@ -26,9 +26,6 @@ _DeviceInfo _$DeviceInfoFromJson(Map<String, dynamic> json) => _DeviceInfo(
       isHMOS: json['is_hmos'] as bool? ?? false,
       isTV: json['is_tv'] as bool? ?? false,
       numberOfProcessors: (json['number_of_processors'] as num?)?.toInt() ?? 0,
-      memoryTotal: (json['memory_total'] as num?)?.toInt() ?? 0,
-      storageTotal: (json['storage_total'] as num?)?.toInt() ?? 0,
-      storageFree: (json['storage_free'] as num?)?.toInt() ?? 0,
     );
 
 Map<String, dynamic> _$DeviceInfoToJson(_DeviceInfo instance) =>
@@ -52,7 +49,4 @@ Map<String, dynamic> _$DeviceInfoToJson(_DeviceInfo instance) =>
       'is_hmos': instance.isHMOS,
       'is_tv': instance.isTV,
       'number_of_processors': instance.numberOfProcessors,
-      'memory_total': instance.memoryTotal,
-      'storage_total': instance.storageTotal,
-      'storage_free': instance.storageFree,
     };

@@ -1,11 +1,11 @@
 <h3>Badge</h3>
-`updateBadge(int value)` and `updateBadgeRequest()` only works with ios
+`updateBadge(int value)` and `updateBadgeRequest()` only works with iOS
 
 ---
 
 
 
-<h4>For huawei</h4> 
+<h4>For Huawei</h4> 
 
 ```gradle
 buildscript {

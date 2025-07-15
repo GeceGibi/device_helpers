@@ -48,12 +48,6 @@ mixin _$DeviceInfo {
   bool get isTV;
   @JsonKey(name: 'number_of_processors')
   int get numberOfProcessors;
-  @JsonKey(name: 'memory_total')
-  int get memoryTotal;
-  @JsonKey(name: 'storage_total')
-  int get storageTotal;
-  @JsonKey(name: 'storage_free')
-  int get storageFree;
 
   /// Create a copy of DeviceInfo
   /// with the given fields replaced by the non-null parameter values.
@@ -97,13 +91,7 @@ mixin _$DeviceInfo {
             (identical(other.isHMOS, isHMOS) || other.isHMOS == isHMOS) &&
             (identical(other.isTV, isTV) || other.isTV == isTV) &&
             (identical(other.numberOfProcessors, numberOfProcessors) ||
-                other.numberOfProcessors == numberOfProcessors) &&
-            (identical(other.memoryTotal, memoryTotal) ||
-                other.memoryTotal == memoryTotal) &&
-            (identical(other.storageTotal, storageTotal) ||
-                other.storageTotal == storageTotal) &&
-            (identical(other.storageFree, storageFree) ||
-                other.storageFree == storageFree));
+                other.numberOfProcessors == numberOfProcessors));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -128,15 +116,12 @@ mixin _$DeviceInfo {
         isHMS,
         isHMOS,
         isTV,
-        numberOfProcessors,
-        memoryTotal,
-        storageTotal,
-        storageFree
+        numberOfProcessors
       ]);
 
   @override
   String toString() {
-    return 'DeviceInfo(manufacturer: $manufacturer, brand: $brand, model: $model, uuid: $uuid, appVersion: $appVersion, appBundle: $appBundle, appBuild: $appBuild, appName: $appName, os: $os, osVersion: $osVersion, sdkVersion: $sdkVersion, isEmulator: $isEmulator, isTablet: $isTablet, isMIUI: $isMIUI, isGMS: $isGMS, isHMS: $isHMS, isHMOS: $isHMOS, isTV: $isTV, numberOfProcessors: $numberOfProcessors, memoryTotal: $memoryTotal, storageTotal: $storageTotal, storageFree: $storageFree)';
+    return 'DeviceInfo(manufacturer: $manufacturer, brand: $brand, model: $model, uuid: $uuid, appVersion: $appVersion, appBundle: $appBundle, appBuild: $appBuild, appName: $appName, os: $os, osVersion: $osVersion, sdkVersion: $sdkVersion, isEmulator: $isEmulator, isTablet: $isTablet, isMIUI: $isMIUI, isGMS: $isGMS, isHMS: $isHMS, isHMOS: $isHMOS, isTV: $isTV, numberOfProcessors: $numberOfProcessors)';
   }
 }
 
@@ -165,10 +150,7 @@ abstract mixin class $DeviceInfoCopyWith<$Res> {
       @JsonKey(name: 'is_hms') bool isHMS,
       @JsonKey(name: 'is_hmos') bool isHMOS,
       @JsonKey(name: 'is_tv') bool isTV,
-      @JsonKey(name: 'number_of_processors') int numberOfProcessors,
-      @JsonKey(name: 'memory_total') int memoryTotal,
-      @JsonKey(name: 'storage_total') int storageTotal,
-      @JsonKey(name: 'storage_free') int storageFree});
+      @JsonKey(name: 'number_of_processors') int numberOfProcessors});
 }
 
 /// @nodoc
@@ -202,9 +184,6 @@ class _$DeviceInfoCopyWithImpl<$Res> implements $DeviceInfoCopyWith<$Res> {
     Object? isHMOS = null,
     Object? isTV = null,
     Object? numberOfProcessors = null,
-    Object? memoryTotal = null,
-    Object? storageTotal = null,
-    Object? storageFree = null,
   }) {
     return _then(_self.copyWith(
       manufacturer: null == manufacturer
@@ -283,18 +262,6 @@ class _$DeviceInfoCopyWithImpl<$Res> implements $DeviceInfoCopyWith<$Res> {
           ? _self.numberOfProcessors
           : numberOfProcessors // ignore: cast_nullable_to_non_nullable
               as int,
-      memoryTotal: null == memoryTotal
-          ? _self.memoryTotal
-          : memoryTotal // ignore: cast_nullable_to_non_nullable
-              as int,
-      storageTotal: null == storageTotal
-          ? _self.storageTotal
-          : storageTotal // ignore: cast_nullable_to_non_nullable
-              as int,
-      storageFree: null == storageFree
-          ? _self.storageFree
-          : storageFree // ignore: cast_nullable_to_non_nullable
-              as int,
     ));
   }
 }
@@ -321,10 +288,7 @@ class _DeviceInfo implements DeviceInfo {
       @JsonKey(name: 'is_hms') this.isHMS = false,
       @JsonKey(name: 'is_hmos') this.isHMOS = false,
       @JsonKey(name: 'is_tv') this.isTV = false,
-      @JsonKey(name: 'number_of_processors') this.numberOfProcessors = 0,
-      @JsonKey(name: 'memory_total') this.memoryTotal = 0,
-      @JsonKey(name: 'storage_total') this.storageTotal = 0,
-      @JsonKey(name: 'storage_free') this.storageFree = 0});
+      @JsonKey(name: 'number_of_processors') this.numberOfProcessors = 0});
   factory _DeviceInfo.fromJson(Map<String, dynamic> json) =>
       _$DeviceInfoFromJson(json);
 
@@ -385,15 +349,6 @@ class _DeviceInfo implements DeviceInfo {
   @override
   @JsonKey(name: 'number_of_processors')
   final int numberOfProcessors;
-  @override
-  @JsonKey(name: 'memory_total')
-  final int memoryTotal;
-  @override
-  @JsonKey(name: 'storage_total')
-  final int storageTotal;
-  @override
-  @JsonKey(name: 'storage_free')
-  final int storageFree;
 
   /// Create a copy of DeviceInfo
   /// with the given fields replaced by the non-null parameter values.
@@ -442,13 +397,7 @@ class _DeviceInfo implements DeviceInfo {
             (identical(other.isHMOS, isHMOS) || other.isHMOS == isHMOS) &&
             (identical(other.isTV, isTV) || other.isTV == isTV) &&
             (identical(other.numberOfProcessors, numberOfProcessors) ||
-                other.numberOfProcessors == numberOfProcessors) &&
-            (identical(other.memoryTotal, memoryTotal) ||
-                other.memoryTotal == memoryTotal) &&
-            (identical(other.storageTotal, storageTotal) ||
-                other.storageTotal == storageTotal) &&
-            (identical(other.storageFree, storageFree) ||
-                other.storageFree == storageFree));
+                other.numberOfProcessors == numberOfProcessors));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -473,15 +422,12 @@ class _DeviceInfo implements DeviceInfo {
         isHMS,
         isHMOS,
         isTV,
-        numberOfProcessors,
-        memoryTotal,
-        storageTotal,
-        storageFree
+        numberOfProcessors
       ]);
 
   @override
   String toString() {
-    return 'DeviceInfo(manufacturer: $manufacturer, brand: $brand, model: $model, uuid: $uuid, appVersion: $appVersion, appBundle: $appBundle, appBuild: $appBuild, appName: $appName, os: $os, osVersion: $osVersion, sdkVersion: $sdkVersion, isEmulator: $isEmulator, isTablet: $isTablet, isMIUI: $isMIUI, isGMS: $isGMS, isHMS: $isHMS, isHMOS: $isHMOS, isTV: $isTV, numberOfProcessors: $numberOfProcessors, memoryTotal: $memoryTotal, storageTotal: $storageTotal, storageFree: $storageFree)';
+    return 'DeviceInfo(manufacturer: $manufacturer, brand: $brand, model: $model, uuid: $uuid, appVersion: $appVersion, appBundle: $appBundle, appBuild: $appBuild, appName: $appName, os: $os, osVersion: $osVersion, sdkVersion: $sdkVersion, isEmulator: $isEmulator, isTablet: $isTablet, isMIUI: $isMIUI, isGMS: $isGMS, isHMS: $isHMS, isHMOS: $isHMOS, isTV: $isTV, numberOfProcessors: $numberOfProcessors)';
   }
 }
 
@@ -512,10 +458,7 @@ abstract mixin class _$DeviceInfoCopyWith<$Res>
       @JsonKey(name: 'is_hms') bool isHMS,
       @JsonKey(name: 'is_hmos') bool isHMOS,
       @JsonKey(name: 'is_tv') bool isTV,
-      @JsonKey(name: 'number_of_processors') int numberOfProcessors,
-      @JsonKey(name: 'memory_total') int memoryTotal,
-      @JsonKey(name: 'storage_total') int storageTotal,
-      @JsonKey(name: 'storage_free') int storageFree});
+      @JsonKey(name: 'number_of_processors') int numberOfProcessors});
 }
 
 /// @nodoc
@@ -549,9 +492,6 @@ class __$DeviceInfoCopyWithImpl<$Res> implements _$DeviceInfoCopyWith<$Res> {
     Object? isHMOS = null,
     Object? isTV = null,
     Object? numberOfProcessors = null,
-    Object? memoryTotal = null,
-    Object? storageTotal = null,
-    Object? storageFree = null,
   }) {
     return _then(_DeviceInfo(
       manufacturer: null == manufacturer
@@ -629,18 +569,6 @@ class __$DeviceInfoCopyWithImpl<$Res> implements _$DeviceInfoCopyWith<$Res> {
       numberOfProcessors: null == numberOfProcessors
           ? _self.numberOfProcessors
           : numberOfProcessors // ignore: cast_nullable_to_non_nullable
-              as int,
-      memoryTotal: null == memoryTotal
-          ? _self.memoryTotal
-          : memoryTotal // ignore: cast_nullable_to_non_nullable
-              as int,
-      storageTotal: null == storageTotal
-          ? _self.storageTotal
-          : storageTotal // ignore: cast_nullable_to_non_nullable
-              as int,
-      storageFree: null == storageFree
-          ? _self.storageFree
-          : storageFree // ignore: cast_nullable_to_non_nullable
               as int,
     ));
   }

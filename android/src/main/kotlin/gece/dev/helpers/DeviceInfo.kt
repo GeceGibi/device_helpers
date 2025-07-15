@@ -1,15 +1,11 @@
 package gece.dev.helpers
 
 import android.annotation.SuppressLint
-import android.app.ActivityManager
 import android.content.Context
-import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
-import android.os.Environment
-import android.os.StatFs
 import android.provider.Settings
 import android.text.TextUtils
 import com.google.android.gms.common.ConnectionResult
@@ -19,122 +15,83 @@ import io.flutter.plugin.common.MethodChannel
 
 class DeviceInfo(private val context: Context) {
 
-    private val checkEmulator = CheckEmulator();
+    private val checkEmulator = CheckEmulator()
+    private val packageManager = context.packageManager
 
     fun info(result: MethodChannel.Result) {
         try {
-            val appInfo: ApplicationInfo = context.applicationInfo
-            val packageInfo: PackageInfo = context.packageManager.getPackageInfo(
-                context.packageName, 0,
-            );
-
-            val appVersion = packageInfo.versionName;
-            val appBuild = getLongVersionCode(packageInfo);
-            val appName = appInfo.loadLabel(context.packageManager).toString()
-
-            val info = mapOf(
-                "app_version" to appVersion,
-                "app_build" to appBuild,
-                "app_name" to appName,
-                "app_bundle" to context.packageName,
-                "is_tablet" to isTablet(),
-                "uuid" to uuid(),
-                "os_version" to Build.VERSION.SDK_INT.toString(),
-                "manufacturer" to Build.MANUFACTURER,
-                "brand" to Build.BRAND,
-                "model" to Build.MODEL,
-                "is_miui" to isMIUI(),
-                "is_gms" to isGMSAvailable(),
-                "is_hms" to isHMSAvailable(),
-                "is_hmos" to isHMOS(),
-                "is_tv" to isTV(),
-                "is_emulator" to checkEmulator.isEmulator(),
-                "memory_total" to getMemoryTotal(),
-                "storage_total" to getTotalDiskSpace(),
-                "storage_free" to getFreeDiskSpace(),
-            )
-
-            result.success(info);
+            val deviceInfo = buildDeviceInfo()
+            result.success(deviceInfo)
         } catch (error: Exception) {
-            result.error("DEVICE_INFO", "CANNOT GET INFO", error)
+            result.error("DEVICE_INFO", "Cannot get device info", error)
         }
     }
 
-    private fun isMIUI(): Boolean {
-        return !TextUtils.isEmpty(SystemProperties.get("ro.miui.ui.version.name"))
+    private fun buildDeviceInfo(): Map<String, Any> {
+        val appInfo = context.applicationInfo
+        val packageInfo = packageManager.getPackageInfo(context.packageName, 0)
+
+        return mapOf(
+            "app_version" to packageInfo.versionName,
+            "app_build" to getVersionCode(packageInfo),
+            "app_name" to appInfo.loadLabel(packageManager).toString(),
+            "app_bundle" to context.packageName,
+            "is_tablet" to isTablet(),
+            "uuid" to getDeviceId(),
+            "os_version" to Build.VERSION.SDK_INT.toString(),
+            "manufacturer" to Build.MANUFACTURER,
+            "brand" to Build.BRAND,
+            "model" to Build.MODEL,
+            "is_miui" to isMIUI(),
+            "is_gms" to isGMSAvailable(),
+            "is_hms" to isHMSAvailable(),
+            "is_hmos" to isHMOS(),
+            "is_tv" to isTV(),
+            "is_emulator" to checkEmulator.isEmulator()
+        )
     }
 
-    fun isHMOS(): Boolean {
-        return try {
-            Class.forName("ohos.app.Application") != null
+    private fun isMIUI(): Boolean =
+        !TextUtils.isEmpty(SystemProperties.get("ro.miui.ui.version.name"))
+
+    fun isHMOS(): Boolean =
+        try {
+            Class.forName("ohos.app.Application")
+            true
         } catch (e: Exception) {
             false
         }
-    }
 
-    private fun isTV(): Boolean {
-        return context.packageManager.run {
+    private fun isTV(): Boolean =
+        packageManager.run {
             hasSystemFeature(PackageManager.FEATURE_TELEVISION) ||
-                    (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && hasSystemFeature(
-                        PackageManager.FEATURE_LEANBACK
-                    ))
+                    hasSystemFeature(PackageManager.FEATURE_LEANBACK)
         }
-    }
-
-    private fun getFreeDiskSpace(): Long {
-        val statFs = StatFs(Environment.getDataDirectory().absolutePath)
-
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            statFs.availableBlocksLong * statFs.blockSizeLong
-        } else {
-            (statFs.availableBlocks * statFs.blockSize).toLong()
-        }
-    }
 
     @SuppressLint("HardwareIds")
-    private fun uuid(): String {
-        return Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
-    }
+    private fun getDeviceId(): String =
+        Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID) ?: ""
 
-
-    private fun isGMSAvailable(): Boolean {
-        return GoogleApiAvailability.getInstance()
+    private fun isGMSAvailable(): Boolean =
+        GoogleApiAvailability.getInstance()
             .isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS
-    }
 
-    private fun isHMSAvailable(): Boolean {
-        return HuaweiApiAvailability.getInstance()
+    private fun isHMSAvailable(): Boolean =
+        HuaweiApiAvailability.getInstance()
             .isHuaweiMobileServicesAvailable(context) == ConnectionResult.SUCCESS
-    }
-
-    private fun getMemoryTotal(): Long {
-        val actManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-        return ActivityManager.MemoryInfo().apply { actManager.getMemoryInfo(this) }.totalMem
-    }
-
-    private fun getTotalDiskSpace(): Long {
-        val statFs = StatFs(Environment.getDataDirectory().absolutePath)
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            statFs.blockCountLong * statFs.blockSizeLong
-        } else {
-            (statFs.blockCount * statFs.blockSize).toLong()
-        }
-    }
-
 
     private fun isTablet(): Boolean {
         val screenConfig = context.resources.configuration
-        return screenConfig.smallestScreenWidthDp.takeIf { it != Configuration.SMALLEST_SCREEN_WIDTH_DP_UNDEFINED }
-            ?.let {
-                it >= 600
-            } ?: false
+        return screenConfig.smallestScreenWidthDp
+            .takeIf { it != Configuration.SMALLEST_SCREEN_WIDTH_DP_UNDEFINED }
+            ?.let { it >= 600 } ?: false
     }
 
-    private fun getLongVersionCode(info: PackageInfo): String {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+    private fun getVersionCode(info: PackageInfo): String =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             info.longVersionCode.toString()
         } else {
+            @Suppress("DEPRECATION")
             info.versionCode.toString()
         }
-    }
 }

@@ -1,5 +1,5 @@
 name: device_helpers
-description: A new Flutter plugin project.
+description: A Flutter plugin for device information and utilities.
 version: 1.4.0+1
 
 environment:
@@ -34,6 +34,6 @@ flutter:
         pluginClass: DeviceHelpers
       web:
         pluginClass: DeviceHelpers
-        fileName: flutter_helpers_web.dart
+        fileName: device_helpers_web.dart
 
 
