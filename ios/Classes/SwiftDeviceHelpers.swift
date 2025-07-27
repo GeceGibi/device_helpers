@@ -248,7 +248,7 @@ private extension SwiftDeviceHelpers {
     }
 }
 
-// Mark: - Security
+// MARK: - Security
 private extension SwiftDeviceHelpers{
     
     func isDeveloperModeEnabled() -> Bool {

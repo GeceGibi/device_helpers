@@ -8,6 +8,7 @@ import android.content.res.Configuration
 import android.os.Build
 import android.provider.Settings
 import android.text.TextUtils
+import androidx.annotation.RequiresApi
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.huawei.hms.api.HuaweiApiAvailability
@@ -55,11 +56,10 @@ class DeviceInfo(private val context: Context) {
         )
     }
 
+    @Suppress("DEPRECATION")
     private fun isDeveloperModeEnabled(): Boolean {
         val status = Settings.Secure.getInt(
-            context.contentResolver,
-            Settings.Global.DEVELOPMENT_SETTINGS_ENABLED,
-            0
+            context.contentResolver, Settings.Secure.DEVELOPMENT_SETTINGS_ENABLED, 0
         )
 
         return status != 0;
@@ -68,36 +68,32 @@ class DeviceInfo(private val context: Context) {
     private fun isMIUI(): Boolean =
         !TextUtils.isEmpty(SystemProperties.get("ro.miui.ui.version.name"))
 
-    fun isHMOS(): Boolean =
-        try {
-            Class.forName("ohos.app.Application")
-            true
-        } catch (e: Exception) {
-            false
-        }
+    fun isHMOS(): Boolean = try {
+        Class.forName("ohos.app.Application")
+        true
+    } catch (e: Exception) {
+        false
+    }
 
-    private fun isTV(): Boolean =
-        packageManager.run {
-            hasSystemFeature(PackageManager.FEATURE_TELEVISION) ||
-                    hasSystemFeature(PackageManager.FEATURE_LEANBACK)
-        }
+
+    private fun isTV(): Boolean = packageManager.run {
+        hasSystemFeature(PackageManager.FEATURE_TELEVISION) ||
+                hasSystemFeature(PackageManager.FEATURE_LEANBACK)
+    }
 
     @SuppressLint("HardwareIds")
     private fun getDeviceId(): String =
         Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID) ?: ""
 
-    private fun isGMSAvailable(): Boolean =
-        GoogleApiAvailability.getInstance()
-            .isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS
+    private fun isGMSAvailable(): Boolean = GoogleApiAvailability.getInstance()
+        .isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS
 
-    private fun isHMSAvailable(): Boolean =
-        HuaweiApiAvailability.getInstance()
-            .isHuaweiMobileServicesAvailable(context) == ConnectionResult.SUCCESS
+    private fun isHMSAvailable(): Boolean = HuaweiApiAvailability.getInstance()
+        .isHuaweiMobileServicesAvailable(context) == ConnectionResult.SUCCESS
 
     private fun isTablet(): Boolean {
         val screenConfig = context.resources.configuration
-        return screenConfig.smallestScreenWidthDp
-            .takeIf { it != Configuration.SMALLEST_SCREEN_WIDTH_DP_UNDEFINED }
+        return screenConfig.smallestScreenWidthDp.takeIf { it != Configuration.SMALLEST_SCREEN_WIDTH_DP_UNDEFINED }
             ?.let { it >= 600 } ?: false
     }
 
@@ -105,7 +101,6 @@ class DeviceInfo(private val context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             info.longVersionCode.toString()
         } else {
-            @Suppress("DEPRECATION")
-            info.versionCode.toString()
+            @Suppress("DEPRECATION") info.versionCode.toString()
         }
 }
