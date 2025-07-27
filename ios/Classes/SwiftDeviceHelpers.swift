@@ -154,27 +154,27 @@ public class SwiftDeviceHelpers: NSObject, FlutterPlugin {
      */
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch call.method {
-        case "app_settings":
+        case "appSettings":
             openAppSettings()
             result(nil)
             
-        case "app_notification_settings":
+        case "appNotificationSettings":
             openAppNotificationSettings()
             result(nil)
             
-        case "get_info":
+        case "getInfo":
             getDeviceInfo(result: result)
             
-        case "badge_update":
+        case "badgeUpdate":
             handleBadgeUpdate(call: call, result: result)
             
-        case "update_badge_request":
+        case "updateBadgeRequest":
             updateBadgeRequest(result: result)
             
-        case "get_idfa":
+        case "getIdfa":
             getIdfa(result: result)
             
-        case "request_tracking_authorization":
+        case "requestTrackingAuthorization":
             requestTrackingAuthorization(result: result)
             
         default:
