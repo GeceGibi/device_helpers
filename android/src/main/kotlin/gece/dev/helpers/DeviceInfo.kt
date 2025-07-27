@@ -11,7 +11,9 @@ import android.text.TextUtils
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.huawei.hms.api.HuaweiApiAvailability
+import com.scottyab.rootbeer.RootBeer
 import io.flutter.plugin.common.MethodChannel
+import io.flutter.plugin.common.MethodChannel.Result
 
 class DeviceInfo(private val context: Context) {
 
@@ -27,7 +29,7 @@ class DeviceInfo(private val context: Context) {
         }
     }
 
-    private fun buildDeviceInfo(): Map<String, Any> {
+    private fun buildDeviceInfo(): Map<String, Any?> {
         val appInfo = context.applicationInfo
         val packageInfo = packageManager.getPackageInfo(context.packageName, 0)
 
@@ -47,8 +49,20 @@ class DeviceInfo(private val context: Context) {
             "is_hms" to isHMSAvailable(),
             "is_hmos" to isHMOS(),
             "is_tv" to isTV(),
-            "is_emulator" to checkEmulator.isEmulator()
+            "is_emulator" to checkEmulator.isEmulator(),
+            "is_developer_mode_enabled" to isDeveloperModeEnabled(),
+            "is_rooted" to RootBeer(context).isRooted
         )
+    }
+
+    private fun isDeveloperModeEnabled(): Boolean {
+        val status = Settings.Secure.getInt(
+            context.contentResolver,
+            Settings.Global.DEVELOPMENT_SETTINGS_ENABLED,
+            0
+        )
+
+        return status != 0;
     }
 
     private fun isMIUI(): Boolean =

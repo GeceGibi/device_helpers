@@ -15,37 +15,82 @@ T _$identity<T>(T value) => value;
 
 /// @nodoc
 mixin _$DeviceInfo {
+  /// Device manufacturer (Apple, Samsung, etc.)
   String get manufacturer;
+
+  /// Device brand (iPhone, Galaxy, etc.)
   String get brand;
+
+  /// Device model name
   String get model;
+
+  /// Unique device identifier
   String get uuid;
+
+  /// App version
   @JsonKey(name: 'app_version')
   String get appVersion;
+
+  /// App bundle identifier
   @JsonKey(name: 'app_bundle')
   String get appBundle;
+
+  /// App build number
   @JsonKey(name: 'app_build')
   String get appBuild;
+
+  /// App display name
   @JsonKey(name: 'app_name')
   String get appName;
+
+  /// Operating system name
   String get os;
+
+  /// Operating system version
   @JsonKey(name: 'os_version')
   String get osVersion;
+
+  /// SDK version
   @JsonKey(name: 'sdk_version')
   String get sdkVersion;
+
+  /// True if running in emulator
   @JsonKey(name: 'is_emulator')
   bool get isEmulator;
+
+  /// True if device is tablet
   @JsonKey(name: 'is_tablet')
   bool get isTablet;
+
+  /// True if device has MIUI (Xiaomi)
   @JsonKey(name: 'is_miui')
   bool get isMIUI;
+
+  /// True if Google Mobile Services available
   @JsonKey(name: 'is_gms')
   bool get isGMS;
+
+  /// True if Huawei Mobile Services available
   @JsonKey(name: 'is_hms')
   bool get isHMS;
+
+  /// True if device runs HarmonyOS
   @JsonKey(name: 'is_hmos')
   bool get isHMOS;
+
+  /// True if device is TV
   @JsonKey(name: 'is_tv')
   bool get isTV;
+
+  /// True if developer mode enabled
+  @JsonKey(name: 'is_developer_mode_enabled')
+  bool get isDeveloperModeEnabled;
+
+  /// True if device is rooted
+  @JsonKey(name: 'is_rooted')
+  bool get isRooted;
+
+  /// Number of CPU cores
   @JsonKey(name: 'number_of_processors')
   int get numberOfProcessors;
 
@@ -90,6 +135,10 @@ mixin _$DeviceInfo {
             (identical(other.isHMS, isHMS) || other.isHMS == isHMS) &&
             (identical(other.isHMOS, isHMOS) || other.isHMOS == isHMOS) &&
             (identical(other.isTV, isTV) || other.isTV == isTV) &&
+            (identical(other.isDeveloperModeEnabled, isDeveloperModeEnabled) ||
+                other.isDeveloperModeEnabled == isDeveloperModeEnabled) &&
+            (identical(other.isRooted, isRooted) ||
+                other.isRooted == isRooted) &&
             (identical(other.numberOfProcessors, numberOfProcessors) ||
                 other.numberOfProcessors == numberOfProcessors));
   }
@@ -116,12 +165,14 @@ mixin _$DeviceInfo {
         isHMS,
         isHMOS,
         isTV,
+        isDeveloperModeEnabled,
+        isRooted,
         numberOfProcessors
       ]);
 
   @override
   String toString() {
-    return 'DeviceInfo(manufacturer: $manufacturer, brand: $brand, model: $model, uuid: $uuid, appVersion: $appVersion, appBundle: $appBundle, appBuild: $appBuild, appName: $appName, os: $os, osVersion: $osVersion, sdkVersion: $sdkVersion, isEmulator: $isEmulator, isTablet: $isTablet, isMIUI: $isMIUI, isGMS: $isGMS, isHMS: $isHMS, isHMOS: $isHMOS, isTV: $isTV, numberOfProcessors: $numberOfProcessors)';
+    return 'DeviceInfo(manufacturer: $manufacturer, brand: $brand, model: $model, uuid: $uuid, appVersion: $appVersion, appBundle: $appBundle, appBuild: $appBuild, appName: $appName, os: $os, osVersion: $osVersion, sdkVersion: $sdkVersion, isEmulator: $isEmulator, isTablet: $isTablet, isMIUI: $isMIUI, isGMS: $isGMS, isHMS: $isHMS, isHMOS: $isHMOS, isTV: $isTV, isDeveloperModeEnabled: $isDeveloperModeEnabled, isRooted: $isRooted, numberOfProcessors: $numberOfProcessors)';
   }
 }
 
@@ -150,6 +201,8 @@ abstract mixin class $DeviceInfoCopyWith<$Res> {
       @JsonKey(name: 'is_hms') bool isHMS,
       @JsonKey(name: 'is_hmos') bool isHMOS,
       @JsonKey(name: 'is_tv') bool isTV,
+      @JsonKey(name: 'is_developer_mode_enabled') bool isDeveloperModeEnabled,
+      @JsonKey(name: 'is_rooted') bool isRooted,
       @JsonKey(name: 'number_of_processors') int numberOfProcessors});
 }
 
@@ -183,6 +236,8 @@ class _$DeviceInfoCopyWithImpl<$Res> implements $DeviceInfoCopyWith<$Res> {
     Object? isHMS = null,
     Object? isHMOS = null,
     Object? isTV = null,
+    Object? isDeveloperModeEnabled = null,
+    Object? isRooted = null,
     Object? numberOfProcessors = null,
   }) {
     return _then(_self.copyWith(
@@ -258,6 +313,14 @@ class _$DeviceInfoCopyWithImpl<$Res> implements $DeviceInfoCopyWith<$Res> {
           ? _self.isTV
           : isTV // ignore: cast_nullable_to_non_nullable
               as bool,
+      isDeveloperModeEnabled: null == isDeveloperModeEnabled
+          ? _self.isDeveloperModeEnabled
+          : isDeveloperModeEnabled // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isRooted: null == isRooted
+          ? _self.isRooted
+          : isRooted // ignore: cast_nullable_to_non_nullable
+              as bool,
       numberOfProcessors: null == numberOfProcessors
           ? _self.numberOfProcessors
           : numberOfProcessors // ignore: cast_nullable_to_non_nullable
@@ -288,64 +351,114 @@ class _DeviceInfo implements DeviceInfo {
       @JsonKey(name: 'is_hms') this.isHMS = false,
       @JsonKey(name: 'is_hmos') this.isHMOS = false,
       @JsonKey(name: 'is_tv') this.isTV = false,
+      @JsonKey(name: 'is_developer_mode_enabled')
+      this.isDeveloperModeEnabled = false,
+      @JsonKey(name: 'is_rooted') this.isRooted = false,
       @JsonKey(name: 'number_of_processors') this.numberOfProcessors = 0});
   factory _DeviceInfo.fromJson(Map<String, dynamic> json) =>
       _$DeviceInfoFromJson(json);
 
+  /// Device manufacturer (Apple, Samsung, etc.)
   @override
   @JsonKey()
   final String manufacturer;
+
+  /// Device brand (iPhone, Galaxy, etc.)
   @override
   @JsonKey()
   final String brand;
+
+  /// Device model name
   @override
   @JsonKey()
   final String model;
+
+  /// Unique device identifier
   @override
   @JsonKey()
   final String uuid;
+
+  /// App version
   @override
   @JsonKey(name: 'app_version')
   final String appVersion;
+
+  /// App bundle identifier
   @override
   @JsonKey(name: 'app_bundle')
   final String appBundle;
+
+  /// App build number
   @override
   @JsonKey(name: 'app_build')
   final String appBuild;
+
+  /// App display name
   @override
   @JsonKey(name: 'app_name')
   final String appName;
+
+  /// Operating system name
   @override
   @JsonKey()
   final String os;
+
+  /// Operating system version
   @override
   @JsonKey(name: 'os_version')
   final String osVersion;
+
+  /// SDK version
   @override
   @JsonKey(name: 'sdk_version')
   final String sdkVersion;
+
+  /// True if running in emulator
   @override
   @JsonKey(name: 'is_emulator')
   final bool isEmulator;
+
+  /// True if device is tablet
   @override
   @JsonKey(name: 'is_tablet')
   final bool isTablet;
+
+  /// True if device has MIUI (Xiaomi)
   @override
   @JsonKey(name: 'is_miui')
   final bool isMIUI;
+
+  /// True if Google Mobile Services available
   @override
   @JsonKey(name: 'is_gms')
   final bool isGMS;
+
+  /// True if Huawei Mobile Services available
   @override
   @JsonKey(name: 'is_hms')
   final bool isHMS;
+
+  /// True if device runs HarmonyOS
   @override
   @JsonKey(name: 'is_hmos')
   final bool isHMOS;
+
+  /// True if device is TV
   @override
   @JsonKey(name: 'is_tv')
   final bool isTV;
+
+  /// True if developer mode enabled
+  @override
+  @JsonKey(name: 'is_developer_mode_enabled')
+  final bool isDeveloperModeEnabled;
+
+  /// True if device is rooted
+  @override
+  @JsonKey(name: 'is_rooted')
+  final bool isRooted;
+
+  /// Number of CPU cores
   @override
   @JsonKey(name: 'number_of_processors')
   final int numberOfProcessors;
@@ -396,6 +509,10 @@ class _DeviceInfo implements DeviceInfo {
             (identical(other.isHMS, isHMS) || other.isHMS == isHMS) &&
             (identical(other.isHMOS, isHMOS) || other.isHMOS == isHMOS) &&
             (identical(other.isTV, isTV) || other.isTV == isTV) &&
+            (identical(other.isDeveloperModeEnabled, isDeveloperModeEnabled) ||
+                other.isDeveloperModeEnabled == isDeveloperModeEnabled) &&
+            (identical(other.isRooted, isRooted) ||
+                other.isRooted == isRooted) &&
             (identical(other.numberOfProcessors, numberOfProcessors) ||
                 other.numberOfProcessors == numberOfProcessors));
   }
@@ -422,12 +539,14 @@ class _DeviceInfo implements DeviceInfo {
         isHMS,
         isHMOS,
         isTV,
+        isDeveloperModeEnabled,
+        isRooted,
         numberOfProcessors
       ]);
 
   @override
   String toString() {
-    return 'DeviceInfo(manufacturer: $manufacturer, brand: $brand, model: $model, uuid: $uuid, appVersion: $appVersion, appBundle: $appBundle, appBuild: $appBuild, appName: $appName, os: $os, osVersion: $osVersion, sdkVersion: $sdkVersion, isEmulator: $isEmulator, isTablet: $isTablet, isMIUI: $isMIUI, isGMS: $isGMS, isHMS: $isHMS, isHMOS: $isHMOS, isTV: $isTV, numberOfProcessors: $numberOfProcessors)';
+    return 'DeviceInfo(manufacturer: $manufacturer, brand: $brand, model: $model, uuid: $uuid, appVersion: $appVersion, appBundle: $appBundle, appBuild: $appBuild, appName: $appName, os: $os, osVersion: $osVersion, sdkVersion: $sdkVersion, isEmulator: $isEmulator, isTablet: $isTablet, isMIUI: $isMIUI, isGMS: $isGMS, isHMS: $isHMS, isHMOS: $isHMOS, isTV: $isTV, isDeveloperModeEnabled: $isDeveloperModeEnabled, isRooted: $isRooted, numberOfProcessors: $numberOfProcessors)';
   }
 }
 
@@ -458,6 +577,8 @@ abstract mixin class _$DeviceInfoCopyWith<$Res>
       @JsonKey(name: 'is_hms') bool isHMS,
       @JsonKey(name: 'is_hmos') bool isHMOS,
       @JsonKey(name: 'is_tv') bool isTV,
+      @JsonKey(name: 'is_developer_mode_enabled') bool isDeveloperModeEnabled,
+      @JsonKey(name: 'is_rooted') bool isRooted,
       @JsonKey(name: 'number_of_processors') int numberOfProcessors});
 }
 
@@ -491,6 +612,8 @@ class __$DeviceInfoCopyWithImpl<$Res> implements _$DeviceInfoCopyWith<$Res> {
     Object? isHMS = null,
     Object? isHMOS = null,
     Object? isTV = null,
+    Object? isDeveloperModeEnabled = null,
+    Object? isRooted = null,
     Object? numberOfProcessors = null,
   }) {
     return _then(_DeviceInfo(
@@ -565,6 +688,14 @@ class __$DeviceInfoCopyWithImpl<$Res> implements _$DeviceInfoCopyWith<$Res> {
       isTV: null == isTV
           ? _self.isTV
           : isTV // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isDeveloperModeEnabled: null == isDeveloperModeEnabled
+          ? _self.isDeveloperModeEnabled
+          : isDeveloperModeEnabled // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isRooted: null == isRooted
+          ? _self.isRooted
+          : isRooted // ignore: cast_nullable_to_non_nullable
               as bool,
       numberOfProcessors: null == numberOfProcessors
           ? _self.numberOfProcessors

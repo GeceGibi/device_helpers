@@ -64,7 +64,6 @@ class DeviceHelpers : FlutterPlugin, MethodCallHandler, ActivityAware {
                 }
             }
 
-            "is_developer_mode_enabled" -> isDeveloperModeEnabled(result)
             "request_tracking_authorization" -> requestTrackingAuthorization(result)
             "app_settings" -> openAppSettings(result)
             "app_notification_settings" -> openAppNotificationSettings(result)
@@ -80,15 +79,7 @@ class DeviceHelpers : FlutterPlugin, MethodCallHandler, ActivityAware {
     }
 
 
-    private fun isDeveloperModeEnabled(result: Result) {
-        val status = Settings.Secure.getInt(
-            context.contentResolver,
-            Settings.Global.DEVELOPMENT_SETTINGS_ENABLED,
-            0
-        )
 
-        result.success(status != 0)
-    }
 
     private fun openAppSettings(result: Result) {
         routing?.openAppSettings() ?: result.error(

@@ -5,69 +5,79 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'models.g.dart';
 part 'models.freezed.dart';
 
-/// Device information model containing various device details.
+/// Device information model
 @freezed
 abstract class DeviceInfo with _$DeviceInfo {
+  /// Creates a new DeviceInfo instance with device information
+  /// All parameters have default values for optional usage
   factory DeviceInfo({
-    /// Device manufacturer (e.g., "Apple", "Samsung").
+    /// Device manufacturer (Apple, Samsung, etc.)
     @Default('') String manufacturer,
 
-    /// Device brand (e.g., "iPhone", "Galaxy").
+    /// Device brand (iPhone, Galaxy, etc.)
     @Default('') String brand,
 
-    /// Device model name.
+    /// Device model name
     @Default('') String model,
 
-    /// Unique device identifier.
+    /// Unique device identifier
     @Default('') String uuid,
 
-    /// Application version string.
+    /// App version
     @Default('') @JsonKey(name: 'app_version') String appVersion,
 
-    /// Application bundle identifier.
+    /// App bundle identifier
     @Default('') @JsonKey(name: 'app_bundle') String appBundle,
 
-    /// Application build number.
+    /// App build number
     @Default('') @JsonKey(name: 'app_build') String appBuild,
 
-    /// Application display name.
+    /// App display name
     @Default('') @JsonKey(name: 'app_name') String appName,
 
-    /// Operating system name.
+    /// Operating system name
     @Default('') String os,
 
-    /// Operating system version.
+    /// Operating system version
     @Default('') @JsonKey(name: 'os_version') String osVersion,
 
-    /// SDK version information.
+    /// SDK version
     @Default('') @JsonKey(name: 'sdk_version') String sdkVersion,
 
-    /// Whether the device is running in an emulator.
+    /// True if running in emulator
     @Default(false) @JsonKey(name: 'is_emulator') bool isEmulator,
 
-    /// Whether the device is a tablet.
+    /// True if device is tablet
     @Default(false) @JsonKey(name: 'is_tablet') bool isTablet,
 
-    /// Whether the device is running MIUI (Xiaomi).
+    /// True if device has MIUI (Xiaomi)
     @Default(false) @JsonKey(name: 'is_miui') bool isMIUI,
 
-    /// Whether Google Mobile Services are available.
+    /// True if Google Mobile Services available
     @Default(false) @JsonKey(name: 'is_gms') bool isGMS,
 
-    /// Whether Huawei Mobile Services are available.
+    /// True if Huawei Mobile Services available
     @Default(false) @JsonKey(name: 'is_hms') bool isHMS,
 
-    /// Whether the device is running HarmonyOS.
+    /// True if device runs HarmonyOS
     @Default(false) @JsonKey(name: 'is_hmos') bool isHMOS,
 
-    /// Whether the device is a TV.
+    /// True if device is TV
     @Default(false) @JsonKey(name: 'is_tv') bool isTV,
 
-    /// Number of CPU processors.
+    /// True if developer mode enabled
+    @Default(false)
+    @JsonKey(name: 'is_developer_mode_enabled')
+    bool isDeveloperModeEnabled,
+
+    /// True if device is rooted
+    @Default(false) @JsonKey(name: 'is_rooted') bool isRooted,
+
+    /// Number of CPU cores
     @Default(0) @JsonKey(name: 'number_of_processors') int numberOfProcessors,
   }) = _DeviceInfo;
 
-  /// Creates a DeviceInfo from JSON data.
+  /// Creates DeviceInfo from JSON
   factory DeviceInfo.fromJson(Map<String, Object?> json) =>
       _$DeviceInfoFromJson({
         ...json,
@@ -77,29 +87,29 @@ abstract class DeviceInfo with _$DeviceInfo {
       });
 }
 
-/// Exception thrown when device info cannot be retrieved.
+/// Exception when device info cannot be retrieved
 class DeviceInfoException implements Exception {
-  /// Creates a DeviceInfoException with the given cause.
+  /// Creates exception with cause
   DeviceInfoException(this.cause);
 
-  /// The cause of the exception.
+  /// Error cause
   String cause;
 }
 
-/// Status of tracking authorization request.
+/// Tracking authorization status
 enum TrackingRequestStatus {
-  /// User has not made a choice yet.
+  /// User hasn't made choice yet
   notDetermined,
 
-  /// User is restricted from making changes.
+  /// User is restricted
   restricted,
 
-  /// User denied the request.
+  /// User denied request
   denied,
 
-  /// User authorized the request.
+  /// User authorized request
   authorized,
 
-  /// Tracking is not supported on this device.
+  /// Tracking not supported
   notSupported
 }
