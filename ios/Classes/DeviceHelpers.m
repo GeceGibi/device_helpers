@@ -10,11 +10,23 @@
     #import "device_helpers-Swift.h"
 #endif
 
+/**
+ * DeviceHelpers - Objective-C Implementation
+ * 
+ * Provides the Objective-C bridge for the SwiftDeviceHelpers class.
+ * This implementation simply delegates all functionality to the Swift class
+ * to maintain Flutter plugin compatibility.
+ */
 @implementation DeviceHelpers
 
 /**
  * Flutter plugin registration
  * Registers SwiftDeviceHelpers class with Flutter
+ * 
+ * This method is called by Flutter to register the plugin.
+ * It delegates the registration to the Swift implementation.
+ * 
+ * @param registrar Flutter plugin registrar instance
  */
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
     [SwiftDeviceHelpers registerWithRegistrar:registrar];
