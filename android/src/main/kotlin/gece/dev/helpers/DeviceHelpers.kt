@@ -1,5 +1,9 @@
 package gece.dev.helpers
 
+import android.content.Context
+import android.os.Build
+import android.provider.Settings;
+import androidx.annotation.RequiresApi
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -11,21 +15,23 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+
 /** DeviceHelpers - Flutter plugin for device information and utilities */
 class DeviceHelpers : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     private lateinit var channel: MethodChannel
     private lateinit var idfa: Idfa
     private lateinit var device: DeviceInfo
+    private lateinit var context: Context
     private var routing: Routing? = null
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-        val context = flutterPluginBinding.applicationContext
-        
+        context = flutterPluginBinding.applicationContext
+
         idfa = Idfa(context)
         device = DeviceInfo(context)
-        
+
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "gece.dev/helpers")
         channel.setMethodCallHandler(this)
     }
@@ -57,6 +63,8 @@ class DeviceHelpers : FlutterPlugin, MethodCallHandler, ActivityAware {
                     idfa.getId(result)
                 }
             }
+
+            "is_developer_mode_enabled" -> isDeveloperModeEnabled(result)
             "request_tracking_authorization" -> requestTrackingAuthorization(result)
             "app_settings" -> openAppSettings(result)
             "app_notification_settings" -> openAppNotificationSettings(result)
@@ -71,6 +79,17 @@ class DeviceHelpers : FlutterPlugin, MethodCallHandler, ActivityAware {
         result.success(4)
     }
 
+
+    private fun isDeveloperModeEnabled(result: Result) {
+        val status = Settings.Secure.getInt(
+            context.contentResolver,
+            Settings.Global.DEVELOPMENT_SETTINGS_ENABLED,
+            0
+        )
+
+        result.success(status != 0)
+    }
+
     private fun openAppSettings(result: Result) {
         routing?.openAppSettings() ?: result.error(
             "UNAVAILABLE",
@@ -81,7 +100,7 @@ class DeviceHelpers : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     private fun openAppNotificationSettings(result: Result) {
         routing?.openAppNotificationSettings() ?: result.error(
-            "UNAVAILABLE", 
+            "UNAVAILABLE",
             "Activity is not attached.",
             null
         )
