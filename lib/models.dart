@@ -24,65 +24,63 @@ abstract class DeviceInfo with _$DeviceInfo {
     @Default('') String uuid,
 
     /// App version
-    @Default('') @JsonKey(name: 'app_version') String appVersion,
+    @Default('') String appVersion,
 
     /// App bundle identifier
-    @Default('') @JsonKey(name: 'app_bundle') String appBundle,
+    @Default('') String appBundle,
 
     /// App build number
-    @Default('') @JsonKey(name: 'app_build') String appBuild,
+    @Default('') String appBuild,
 
     /// App display name
-    @Default('') @JsonKey(name: 'app_name') String appName,
+    @Default('') String appName,
 
     /// Operating system name
     @Default('') String os,
 
     /// Operating system version
-    @Default('') @JsonKey(name: 'os_version') String osVersion,
+    @Default('') String osVersion,
 
     /// SDK version
-    @Default('') @JsonKey(name: 'sdk_version') String sdkVersion,
+    @Default('') String sdkVersion,
 
     /// True if running in emulator
-    @Default(false) @JsonKey(name: 'is_emulator') bool isEmulator,
+    @Default(false) bool isEmulator,
 
     /// True if device is tablet
-    @Default(false) @JsonKey(name: 'is_tablet') bool isTablet,
+    @Default(false) bool isTablet,
 
     /// True if device has MIUI (Xiaomi)
-    @Default(false) @JsonKey(name: 'is_miui') bool isMIUI,
+    @Default(false) bool isMIUI,
 
     /// True if Google Mobile Services available
-    @Default(false) @JsonKey(name: 'is_gms') bool isGMS,
+    @Default(false) bool isGMS,
 
     /// True if Huawei Mobile Services available
-    @Default(false) @JsonKey(name: 'is_hms') bool isHMS,
+    @Default(false) bool isHMS,
 
     /// True if device runs HarmonyOS
-    @Default(false) @JsonKey(name: 'is_hmos') bool isHMOS,
+    @Default(false) bool isHMOS,
 
     /// True if device is TV
-    @Default(false) @JsonKey(name: 'is_tv') bool isTV,
+    @Default(false) bool isTV,
 
     /// True if developer mode enabled
-    @Default(false)
-    @JsonKey(name: 'is_developer_mode_enabled')
-    bool isDeveloperModeEnabled,
+    @Default(false) bool isDeveloperModeEnabled,
 
     /// True if device is rooted
-    @Default(false) @JsonKey(name: 'is_rooted') bool isRooted,
+    @Default(false) bool isRooted,
 
     /// Number of CPU cores
-    @Default(0) @JsonKey(name: 'number_of_processors') int numberOfProcessors,
+    @Default(0) int numberOfProcessors,
   }) = _DeviceInfo;
 
   /// Creates DeviceInfo from JSON
   factory DeviceInfo.fromJson(Map<String, Object?> json) =>
       _$DeviceInfoFromJson({
         ...json,
-        'number_of_processors': Platform.numberOfProcessors,
-        'sdk_version': Platform.version,
+        'numberOfProcessors': Platform.numberOfProcessors,
+        'sdkVersion': Platform.version,
         'os': Platform.operatingSystem,
       });
 }

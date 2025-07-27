@@ -58,18 +58,18 @@ class DeviceHelpers : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     override fun onMethodCall(call: MethodCall, result: Result) {
         when (call.method) {
-            "get_idfa" -> {
+            "getIdfa" -> {
                 coroutineScope.launch {
                     idfa.getId(result)
                 }
             }
 
-            "request_tracking_authorization" -> requestTrackingAuthorization(result)
-            "app_settings" -> openAppSettings(result)
-            "app_notification_settings" -> openAppNotificationSettings(result)
-            "update_badge_request" -> result.success(false)
-            "badge_update" -> updateBadge(call.arguments as? Int ?: 0)
-            "get_info" -> device.info(result)
+            "requestTrackingAuthorization" -> requestTrackingAuthorization(result)
+            "appSettings" -> openAppSettings(result)
+            "appNotificationSettings" -> openAppNotificationSettings(result)
+            "updateBadgeRequest" -> result.success(false)
+            "badgeUpdate" -> updateBadge(call.arguments as? Int ?: 0)
+            "getInfo" -> device.info(result)
             else -> result.notImplemented()
         }
     }

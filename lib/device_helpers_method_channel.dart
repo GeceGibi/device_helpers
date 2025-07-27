@@ -15,9 +15,7 @@ class MethodChannelHelpers extends FlutterHelpersPlatform {
   @override
   Future<DeviceInfo> getInfo() async {
     try {
-      final data = await channel.invokeMapMethod<String, dynamic>(
-        'get_info',
-      );
+      final data = await channel.invokeMapMethod<String, dynamic>('getInfo');
 
       return DeviceInfo.fromJson(data!);
     } on PlatformException catch (e) {
@@ -30,13 +28,13 @@ class MethodChannelHelpers extends FlutterHelpersPlatform {
   /// Gets the IDFA from the native platform.
   @override
   Future<String?> getIdfa() {
-    return channel.invokeMethod<String>('get_idfa');
+    return channel.invokeMethod<String>('getIdfa');
   }
 
   /// Requests tracking authorization from the native platform.
   @override
   Future<TrackingRequestStatus> requestTrackingAuthorization() async {
-    switch (await channel.invokeMethod('request_tracking_authorization')) {
+    switch (await channel.invokeMethod('requestTrackingAuthorization')) {
       case 1:
         return TrackingRequestStatus.restricted;
       case 2:
@@ -55,14 +53,14 @@ class MethodChannelHelpers extends FlutterHelpersPlatform {
   /// Updates the app badge count on the native platform.
   @override
   Future<void> badgeUpdate(int value) async {
-    await channel.invokeMethod('badge_update', value);
+    await channel.invokeMethod('badgeUpdate', value);
   }
 
   /// Requests permission to update badge count on the native platform.
   @override
   Future<bool> badgeUpdateRequest() async {
     final status = await channel.invokeMethod<bool>(
-      'update_badge_request',
+      'updateBadgeRequest',
     );
 
     return status ?? false;
@@ -71,12 +69,12 @@ class MethodChannelHelpers extends FlutterHelpersPlatform {
   /// Opens the app notification settings on the native platform.
   @override
   Future<void> openAppNotificationSettings() async {
-    await channel.invokeMethod('app_notification_settings');
+    await channel.invokeMethod('appNotificationSettings');
   }
 
   /// Opens the app settings on the native platform.
   @override
   Future<void> openAppSettings() async {
-    await channel.invokeMethod('app_settings');
+    await channel.invokeMethod('appSettings');
   }
 }

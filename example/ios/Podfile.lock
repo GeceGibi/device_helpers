@@ -1,11 +1,17 @@
 PODS:
   - device_helpers (1.0.0):
+    - DTTJailbreakDetection
     - Flutter
+  - DTTJailbreakDetection (0.4.0)
   - Flutter (1.0.0)
 
 DEPENDENCIES:
   - device_helpers (from `.symlinks/plugins/device_helpers/ios`)
   - Flutter (from `Flutter`)
+
+SPEC REPOS:
+  trunk:
+    - DTTJailbreakDetection
 
 EXTERNAL SOURCES:
   device_helpers:
@@ -14,9 +20,10 @@ EXTERNAL SOURCES:
     :path: Flutter
 
 SPEC CHECKSUMS:
-  device_helpers: 21a6eda5b87dc7213e1883ad43b3959e1536fcce
+  device_helpers: 5946d2e07cdd22264f78663f2357c0892ecb3647
+  DTTJailbreakDetection: 5e356c5badc17995f65a83ed9483f787a0057b71
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
 
 PODFILE CHECKSUM: 819463e6a0290f5a72f145ba7cde16e8b6ef0796
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2

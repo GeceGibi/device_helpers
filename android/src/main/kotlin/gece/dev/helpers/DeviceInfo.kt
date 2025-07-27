@@ -34,24 +34,24 @@ class DeviceInfo(private val context: Context) {
         val packageInfo = packageManager.getPackageInfo(context.packageName, 0)
 
         return mapOf(
-            "app_version" to packageInfo.versionName,
-            "app_build" to getVersionCode(packageInfo),
-            "app_name" to appInfo.loadLabel(packageManager).toString(),
-            "app_bundle" to context.packageName,
-            "is_tablet" to isTablet(),
+            "appVersion" to packageInfo.versionName,
+            "appBuild" to getVersionCode(packageInfo),
+            "appName" to appInfo.loadLabel(packageManager).toString(),
+            "appBundle" to context.packageName,
             "uuid" to getDeviceId(),
-            "os_version" to Build.VERSION.SDK_INT.toString(),
+            "osVersion" to Build.VERSION.SDK_INT.toString(),
             "manufacturer" to Build.MANUFACTURER,
             "brand" to Build.BRAND,
             "model" to Build.MODEL,
-            "is_miui" to isMIUI(),
-            "is_gms" to isGMSAvailable(),
-            "is_hms" to isHMSAvailable(),
-            "is_hmos" to isHMOS(),
-            "is_tv" to isTV(),
-            "is_emulator" to checkEmulator.isEmulator(),
-            "is_developer_mode_enabled" to isDeveloperModeEnabled(),
-            "is_rooted" to RootBeer(context).isRooted
+            "isMiui" to isMIUI(),
+            "isTablet" to isTablet(),
+            "isGms" to isGMSAvailable(),
+            "isHms" to isHMSAvailable(),
+            "isHmos" to isHMOS(),
+            "isTv" to isTV(),
+            "isEmulator" to checkEmulator.isEmulator(),
+            "isDeveloper_mode_enabled" to isDeveloperModeEnabled(),
+            "isRooted" to RootBeer(context).isRooted
         )
     }
 

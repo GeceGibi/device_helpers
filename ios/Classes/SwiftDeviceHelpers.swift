@@ -3,6 +3,7 @@ import AdSupport
 import Flutter
 import UIKit
 import UserNotifications
+import DTTJailbreakDetection
 
 // MARK: - Device Info Model
 private struct DeviceInfo {
@@ -22,25 +23,29 @@ private struct DeviceInfo {
     let isHms: Bool
     let isHmos: Bool
     let isTv: Bool
+    let isDeveloperModeEnabled: Bool
+    let isRooted: Bool
     
     var toDictionary: [String: Any] {
         return [
-            "app_version": appVersion,
-            "app_build": appBuild,
-            "app_name": appName,
-            "app_bundle": appBundle,
-            "is_tablet": isTablet,
+            "appVersion": appVersion,
+            "appBuild": appBuild,
+            "appName": appName,
+            "appBundle": appBundle,
+            "isTablet": isTablet,
             "uuid": uuid,
-            "os_version": osVersion,
+            "osVersion": osVersion,
             "manufacturer": manufacturer,
             "brand": brand,
             "model": model,
-            "is_emulator": isEmulator,
-            "is_miui": isMiui,
-            "is_gms": isGms,
-            "is_hms": isHms,
-            "is_hmos": isHmos,
-            "is_tv": isTv
+            "isEmulator": isEmulator,
+            "isMiui": isMiui,
+            "isGms": isGms,
+            "isHms": isHms,
+            "isHmos": isHmos,
+            "isTv": isTv,
+            "isDeveloperModeEnabled": isDeveloperModeEnabled,
+            "isRooted": isRooted,
         ]
     }
 }
@@ -174,7 +179,9 @@ private extension SwiftDeviceHelpers {
             isGms: false,
             isHms: false,
             isHmos: false,
-            isTv: false
+            isTv: false,
+            isDeveloperModeEnabled: isDeveloperModeEnabled(),
+            isRooted: false,
         )
         
         result(deviceInfo.toDictionary)
@@ -238,5 +245,23 @@ private extension SwiftDeviceHelpers {
         } else {
             result(TrackingStatus.notSupported.rawValue)
         }
+    }
+}
+
+// Mark: - Security
+private extension SwiftDeviceHelpers{
+    
+    func isDeveloperModeEnabled() -> Bool {
+       // if #available(iOS 16.0, *) {
+       //     return DMUserConsent.isDeveloperModeEnabled
+       // } else {
+       //     return false
+       // }
+        
+        return false
+    }
+    
+    func isRooted() -> Bool {
+        return DTTJailbreakDetection.isJailbroken()
     }
 }

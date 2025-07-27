@@ -28,70 +28,54 @@ mixin _$DeviceInfo {
   String get uuid;
 
   /// App version
-  @JsonKey(name: 'app_version')
   String get appVersion;
 
   /// App bundle identifier
-  @JsonKey(name: 'app_bundle')
   String get appBundle;
 
   /// App build number
-  @JsonKey(name: 'app_build')
   String get appBuild;
 
   /// App display name
-  @JsonKey(name: 'app_name')
   String get appName;
 
   /// Operating system name
   String get os;
 
   /// Operating system version
-  @JsonKey(name: 'os_version')
   String get osVersion;
 
   /// SDK version
-  @JsonKey(name: 'sdk_version')
   String get sdkVersion;
 
   /// True if running in emulator
-  @JsonKey(name: 'is_emulator')
   bool get isEmulator;
 
   /// True if device is tablet
-  @JsonKey(name: 'is_tablet')
   bool get isTablet;
 
   /// True if device has MIUI (Xiaomi)
-  @JsonKey(name: 'is_miui')
   bool get isMIUI;
 
   /// True if Google Mobile Services available
-  @JsonKey(name: 'is_gms')
   bool get isGMS;
 
   /// True if Huawei Mobile Services available
-  @JsonKey(name: 'is_hms')
   bool get isHMS;
 
   /// True if device runs HarmonyOS
-  @JsonKey(name: 'is_hmos')
   bool get isHMOS;
 
   /// True if device is TV
-  @JsonKey(name: 'is_tv')
   bool get isTV;
 
   /// True if developer mode enabled
-  @JsonKey(name: 'is_developer_mode_enabled')
   bool get isDeveloperModeEnabled;
 
   /// True if device is rooted
-  @JsonKey(name: 'is_rooted')
   bool get isRooted;
 
   /// Number of CPU cores
-  @JsonKey(name: 'number_of_processors')
   int get numberOfProcessors;
 
   /// Create a copy of DeviceInfo
@@ -187,23 +171,23 @@ abstract mixin class $DeviceInfoCopyWith<$Res> {
       String brand,
       String model,
       String uuid,
-      @JsonKey(name: 'app_version') String appVersion,
-      @JsonKey(name: 'app_bundle') String appBundle,
-      @JsonKey(name: 'app_build') String appBuild,
-      @JsonKey(name: 'app_name') String appName,
+      String appVersion,
+      String appBundle,
+      String appBuild,
+      String appName,
       String os,
-      @JsonKey(name: 'os_version') String osVersion,
-      @JsonKey(name: 'sdk_version') String sdkVersion,
-      @JsonKey(name: 'is_emulator') bool isEmulator,
-      @JsonKey(name: 'is_tablet') bool isTablet,
-      @JsonKey(name: 'is_miui') bool isMIUI,
-      @JsonKey(name: 'is_gms') bool isGMS,
-      @JsonKey(name: 'is_hms') bool isHMS,
-      @JsonKey(name: 'is_hmos') bool isHMOS,
-      @JsonKey(name: 'is_tv') bool isTV,
-      @JsonKey(name: 'is_developer_mode_enabled') bool isDeveloperModeEnabled,
-      @JsonKey(name: 'is_rooted') bool isRooted,
-      @JsonKey(name: 'number_of_processors') int numberOfProcessors});
+      String osVersion,
+      String sdkVersion,
+      bool isEmulator,
+      bool isTablet,
+      bool isMIUI,
+      bool isGMS,
+      bool isHMS,
+      bool isHMOS,
+      bool isTV,
+      bool isDeveloperModeEnabled,
+      bool isRooted,
+      int numberOfProcessors});
 }
 
 /// @nodoc
@@ -337,24 +321,23 @@ class _DeviceInfo implements DeviceInfo {
       this.brand = '',
       this.model = '',
       this.uuid = '',
-      @JsonKey(name: 'app_version') this.appVersion = '',
-      @JsonKey(name: 'app_bundle') this.appBundle = '',
-      @JsonKey(name: 'app_build') this.appBuild = '',
-      @JsonKey(name: 'app_name') this.appName = '',
+      this.appVersion = '',
+      this.appBundle = '',
+      this.appBuild = '',
+      this.appName = '',
       this.os = '',
-      @JsonKey(name: 'os_version') this.osVersion = '',
-      @JsonKey(name: 'sdk_version') this.sdkVersion = '',
-      @JsonKey(name: 'is_emulator') this.isEmulator = false,
-      @JsonKey(name: 'is_tablet') this.isTablet = false,
-      @JsonKey(name: 'is_miui') this.isMIUI = false,
-      @JsonKey(name: 'is_gms') this.isGMS = false,
-      @JsonKey(name: 'is_hms') this.isHMS = false,
-      @JsonKey(name: 'is_hmos') this.isHMOS = false,
-      @JsonKey(name: 'is_tv') this.isTV = false,
-      @JsonKey(name: 'is_developer_mode_enabled')
+      this.osVersion = '',
+      this.sdkVersion = '',
+      this.isEmulator = false,
+      this.isTablet = false,
+      this.isMIUI = false,
+      this.isGMS = false,
+      this.isHMS = false,
+      this.isHMOS = false,
+      this.isTV = false,
       this.isDeveloperModeEnabled = false,
-      @JsonKey(name: 'is_rooted') this.isRooted = false,
-      @JsonKey(name: 'number_of_processors') this.numberOfProcessors = 0});
+      this.isRooted = false,
+      this.numberOfProcessors = 0});
   factory _DeviceInfo.fromJson(Map<String, dynamic> json) =>
       _$DeviceInfoFromJson(json);
 
@@ -380,22 +363,22 @@ class _DeviceInfo implements DeviceInfo {
 
   /// App version
   @override
-  @JsonKey(name: 'app_version')
+  @JsonKey()
   final String appVersion;
 
   /// App bundle identifier
   @override
-  @JsonKey(name: 'app_bundle')
+  @JsonKey()
   final String appBundle;
 
   /// App build number
   @override
-  @JsonKey(name: 'app_build')
+  @JsonKey()
   final String appBuild;
 
   /// App display name
   @override
-  @JsonKey(name: 'app_name')
+  @JsonKey()
   final String appName;
 
   /// Operating system name
@@ -405,62 +388,62 @@ class _DeviceInfo implements DeviceInfo {
 
   /// Operating system version
   @override
-  @JsonKey(name: 'os_version')
+  @JsonKey()
   final String osVersion;
 
   /// SDK version
   @override
-  @JsonKey(name: 'sdk_version')
+  @JsonKey()
   final String sdkVersion;
 
   /// True if running in emulator
   @override
-  @JsonKey(name: 'is_emulator')
+  @JsonKey()
   final bool isEmulator;
 
   /// True if device is tablet
   @override
-  @JsonKey(name: 'is_tablet')
+  @JsonKey()
   final bool isTablet;
 
   /// True if device has MIUI (Xiaomi)
   @override
-  @JsonKey(name: 'is_miui')
+  @JsonKey()
   final bool isMIUI;
 
   /// True if Google Mobile Services available
   @override
-  @JsonKey(name: 'is_gms')
+  @JsonKey()
   final bool isGMS;
 
   /// True if Huawei Mobile Services available
   @override
-  @JsonKey(name: 'is_hms')
+  @JsonKey()
   final bool isHMS;
 
   /// True if device runs HarmonyOS
   @override
-  @JsonKey(name: 'is_hmos')
+  @JsonKey()
   final bool isHMOS;
 
   /// True if device is TV
   @override
-  @JsonKey(name: 'is_tv')
+  @JsonKey()
   final bool isTV;
 
   /// True if developer mode enabled
   @override
-  @JsonKey(name: 'is_developer_mode_enabled')
+  @JsonKey()
   final bool isDeveloperModeEnabled;
 
   /// True if device is rooted
   @override
-  @JsonKey(name: 'is_rooted')
+  @JsonKey()
   final bool isRooted;
 
   /// Number of CPU cores
   @override
-  @JsonKey(name: 'number_of_processors')
+  @JsonKey()
   final int numberOfProcessors;
 
   /// Create a copy of DeviceInfo
@@ -563,23 +546,23 @@ abstract mixin class _$DeviceInfoCopyWith<$Res>
       String brand,
       String model,
       String uuid,
-      @JsonKey(name: 'app_version') String appVersion,
-      @JsonKey(name: 'app_bundle') String appBundle,
-      @JsonKey(name: 'app_build') String appBuild,
-      @JsonKey(name: 'app_name') String appName,
+      String appVersion,
+      String appBundle,
+      String appBuild,
+      String appName,
       String os,
-      @JsonKey(name: 'os_version') String osVersion,
-      @JsonKey(name: 'sdk_version') String sdkVersion,
-      @JsonKey(name: 'is_emulator') bool isEmulator,
-      @JsonKey(name: 'is_tablet') bool isTablet,
-      @JsonKey(name: 'is_miui') bool isMIUI,
-      @JsonKey(name: 'is_gms') bool isGMS,
-      @JsonKey(name: 'is_hms') bool isHMS,
-      @JsonKey(name: 'is_hmos') bool isHMOS,
-      @JsonKey(name: 'is_tv') bool isTV,
-      @JsonKey(name: 'is_developer_mode_enabled') bool isDeveloperModeEnabled,
-      @JsonKey(name: 'is_rooted') bool isRooted,
-      @JsonKey(name: 'number_of_processors') int numberOfProcessors});
+      String osVersion,
+      String sdkVersion,
+      bool isEmulator,
+      bool isTablet,
+      bool isMIUI,
+      bool isGMS,
+      bool isHMS,
+      bool isHMOS,
+      bool isTV,
+      bool isDeveloperModeEnabled,
+      bool isRooted,
+      int numberOfProcessors});
 }
 
 /// @nodoc
