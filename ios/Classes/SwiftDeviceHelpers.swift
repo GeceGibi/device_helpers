@@ -80,7 +80,7 @@ private struct DeviceInfo {
             "isHmos": isHmos,
             "isTv": isTv,
             "isDeveloperModeEnabled": isDeveloperModeEnabled,
-            "isRooted": isRooted,
+            "isRooted": isRooted
         ]
     }
 }
@@ -314,7 +314,7 @@ private extension SwiftDeviceHelpers {
             isHmos: false,
             isTv: false,
             isDeveloperModeEnabled: isLikelyDeveloperModeEnabled(),
-            isRooted: isRooted(),
+            isRooted: isRooted()
         )
         
         result(deviceInfo.toDictionary)
