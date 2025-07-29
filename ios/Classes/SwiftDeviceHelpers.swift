@@ -212,7 +212,12 @@ private extension SwiftDeviceHelpers {
             print("Error: Could not create settings URL")
             return
         }
-        UIApplication.shared.open(url)
+        
+        UIApplication.shared.open(url) { success in
+            if !success {
+                print("Error: Failed to open app settings")
+            }
+        }
     }
     
     /**
@@ -225,7 +230,12 @@ private extension SwiftDeviceHelpers {
                 print("Error: Could not create notification settings URL")
                 return
             }
-            UIApplication.shared.open(url)
+            
+            UIApplication.shared.open(url) { success in
+                if !success {
+                    print("Error: Failed to open notification settings")
+                }
+            }
         } else {
             openAppSettings()
         }
@@ -262,7 +272,12 @@ private extension SwiftDeviceHelpers {
      */
     var deviceModel: String {
         var utsnameInstance = utsname()
-        uname(&utsnameInstance)
+        let result = uname(&utsnameInstance)
+        
+        guard result == 0 else {
+            print("Error: Failed to get device model, uname returned: \(result)")
+            return "Unknown"
+        }
         
         return withUnsafePointer(to: &utsnameInstance.machine) { pointer in
             pointer.withMemoryRebound(to: CChar.self, capacity: 1) { charPointer in
@@ -328,8 +343,23 @@ private extension SwiftDeviceHelpers {
                               details: nil))
             return
         }
-        updateBadge(badge: badge)
-        result(nil)
+        
+        // Validate badge count range
+        guard badge >= 0 else {
+            result(FlutterError(code: "INVALID_ARGUMENT", 
+                              message: "Badge count must be non-negative", 
+                              details: nil))
+            return
+        }
+        
+        do {
+            try updateBadge(badge: badge)
+            result(nil)
+        } catch {
+            result(FlutterError(code: "BADGE_UPDATE_FAILED", 
+                              message: "Failed to update badge: \(error.localizedDescription)", 
+                              details: nil))
+        }
     }
     
     /**
@@ -352,13 +382,23 @@ private extension SwiftDeviceHelpers {
      * Sets the application icon badge number
      * 
      * @param badge The badge count to set
+     * @throws Error if badge update fails
      */
-    func updateBadge(badge: Int) {
+    func updateBadge(badge: Int) throws {
         guard isBadgeSupported else {
-            print("Warning: Badge updates not supported")
-            return
+            throw NSError(domain: "DeviceHelpers", 
+                         code: 1001, 
+                         userInfo: [NSLocalizedDescriptionKey: "Badge updates not supported"])
         }
-        UIApplication.shared.applicationIconBadgeNumber = badge
+        
+        // Ensure we're on the main thread for UI updates
+        if !Thread.isMainThread {
+            DispatchQueue.main.sync {
+                UIApplication.shared.applicationIconBadgeNumber = badge
+            }
+        } else {
+            UIApplication.shared.applicationIconBadgeNumber = badge
+        }
     }
 }
 
@@ -436,9 +476,9 @@ private extension SwiftDeviceHelpers{
      * Comprehensive jailbreak detection
      * Uses multiple methods to detect if device is jailbroken:
      * - Known jailbreak file/directory checks
-     * - Sandbox write test
      * - URL scheme checks
      * - Dynamic library injection checks
+     * - Sandbox integrity checks
      * 
      * @return true if device is jailbroken, false otherwise
      */
@@ -447,47 +487,107 @@ private extension SwiftDeviceHelpers{
         return false
         #endif
 
+        var jailbreakDetected = false
+
         // 1. Check for known jailbreak files/directories
-        let paths = [
+        let jailbreakPaths = [
             "/Applications/Cydia.app",
             "/Library/MobileSubstrate/MobileSubstrate.dylib",
             "/bin/bash",
             "/usr/sbin/sshd",
             "/etc/apt",
             "/private/var/lib/apt/",
-            "/usr/bin/ssh"
+            "/usr/bin/ssh",
+            "/Applications/blackra1n.app",
+            "/Applications/FakeCarrier.app",
+            "/Applications/Icy.app",
+            "/Applications/IntelliScreen.app",
+            "/Applications/MxTube.app",
+            "/Applications/RockApp.app",
+            "/Applications/SBSettings.app",
+            "/Applications/WinterBoard.app",
+            "/Library/MobileSubstrate/DynamicLibraries/Veency.plist",
+            "/Library/MobileSubstrate/DynamicLibraries/LiveClock.plist",
+            "/System/Library/LaunchDaemons/com.ikey.bbot.plist",
+            "/System/Library/LaunchDaemons/com.saurik.Cydia.Startup.plist"
         ]
-        for path in paths {
+        
+        for path in jailbreakPaths {
             if FileManager.default.fileExists(atPath: path) {
-                return true
+                jailbreakDetected = true
+                break
             }
         }
 
-        // 2. Test writing outside sandbox
-        let testWritePath = "/private/jb_test.txt"
-        do {
-            try "test".write(toFile: testWritePath, atomically: true, encoding: .utf8)
-            try FileManager.default.removeItem(atPath: testWritePath)
-            return true
-        } catch {}
-
-        // 3. Check for jailbreak URL schemes
-        if let url = URL(string: "cydia://package/com.example.package") {
-            if UIApplication.shared.canOpenURL(url) {
-                return true
-            }
-        }
-
-        // 4. Check for injected dynamic libraries
-        for i in 0..<_dyld_image_count() {
-            if let name = _dyld_get_image_name(i) {
-                let path = String(cString: name)
-                if path.contains("MobileSubstrate") {
-                    return true
+        // 2. Check for jailbreak URL schemes
+        let jailbreakURLSchemes = [
+            "cydia://package/com.example.package",
+            "cydia://",
+            "sileo://",
+            "zbra://"
+        ]
+        
+        for scheme in jailbreakURLSchemes {
+            if let url = URL(string: scheme) {
+                if UIApplication.shared.canOpenURL(url) {
+                    jailbreakDetected = true
+                    break
                 }
             }
         }
 
-        return false
+        // 3. Check for injected dynamic libraries (with proper memory management)
+        let imageCount = _dyld_image_count()
+        for i in 0..<imageCount {
+            if let name = _dyld_get_image_name(i) {
+                let path = String(cString: name)
+                if path.contains("MobileSubstrate") || 
+                   path.contains("SubstrateLoader") ||
+                   path.contains("substitute") {
+                    jailbreakDetected = true
+                    break
+                }
+            }
+        }
+
+        // 4. Check sandbox integrity (safer approach)
+        if !checkSandboxIntegrity() {
+            jailbreakDetected = true
+        }
+
+        return jailbreakDetected
+    }
+    
+    /**
+     * Checks sandbox integrity without risky file operations
+     * Uses safer methods to detect sandbox violations
+     * 
+     * @return true if sandbox is intact, false if compromised
+     */
+    private func checkSandboxIntegrity() -> Bool {
+        // Check if we can access system directories that should be restricted
+        let restrictedPaths = [
+            "/private/var/mobile/Library/Caches",
+            "/private/var/mobile/Containers/Data/Application"
+        ]
+        
+        for path in restrictedPaths {
+            if FileManager.default.isReadableFile(atPath: path) {
+                // Try to list contents - this should fail in normal sandbox
+                do {
+                    let contents = try FileManager.default.contentsOfDirectory(atPath: path)
+                    // If we can list contents of system directories, sandbox might be compromised
+                    if !contents.isEmpty {
+                        return false
+                    }
+                } catch {
+                    // This is expected behavior - we shouldn't be able to read these directories
+                    continue
+                }
+            }
+        }
+        
+        return true
     }
 }
+
