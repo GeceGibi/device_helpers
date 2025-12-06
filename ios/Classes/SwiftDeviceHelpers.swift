@@ -831,29 +831,40 @@ private extension SwiftDeviceHelpers{
     
     /**
      * Checks if a process is running
-     * Uses ps command to check for process existence
+     * Note: iOS sandbox restrictions prevent direct process checking
+     * This method uses alternative detection methods
      * 
      * @param processName Name of the process to check
-     * @return true if process is running, false otherwise
+     * @return true if process indicators are found, false otherwise
      */
     private func isProcessRunning(processName: String) -> Bool {
-        let task = Foundation.Process()
-        task.executableURL = URL(fileURLWithPath: "/bin/ps")
-        task.arguments = ["-A"]
+        // iOS sandbox prevents direct process checking via ps command
+        // Instead, we check for process-related files and libraries
         
-        let pipe = Pipe()
-        task.standardOutput = pipe
+        // Check for process-specific files
+        let processFiles: [String: [String]] = [
+            "lldb": ["/usr/bin/lldb", "/Developer/usr/bin/lldb"],
+            "gdb": ["/usr/bin/gdb", "/Developer/usr/bin/gdb"],
+            "debugserver": ["/Developer/usr/bin/debugserver"]
+        ]
         
-        do {
-            try task.run()
-            task.waitUntilExit()
-            
-            let data = pipe.fileHandleForReading.readDataToEndOfFile()
-            if let output = String(data: data, encoding: .utf8) {
-                return output.lowercased().contains(processName.lowercased())
+        if let files = processFiles[processName.lowercased()] {
+            for file in files {
+                if FileManager.default.fileExists(atPath: file) {
+                    return true
+                }
             }
-        } catch {
-            // Ignore errors
+        }
+        
+        // Check loaded libraries for process-related indicators
+        let imageCount = _dyld_image_count()
+        for i in 0..<imageCount {
+            if let name = _dyld_get_image_name(i) {
+                let path = String(cString: name)
+                if path.lowercased().contains(processName.lowercased()) {
+                    return true
+                }
+            }
         }
         
         return false
