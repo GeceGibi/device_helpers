@@ -6,6 +6,7 @@ A comprehensive Flutter plugin for device information and utilities across Andro
 
 - 📱 **Device Information**: Get detailed device specs, manufacturer, model, OS version, and more
 - 🔍 **Device Detection**: Detect emulators, tablets, rooted devices, and developer mode
+- 🔒 **Security Checks**: Detect debug mode, USB debugging, debugger attachment, and hooking frameworks (Xposed, Frida, Substrate)
 - 📊 **Platform Services**: Check for Google Mobile Services (GMS), Huawei Mobile Services (HMS), and HarmonyOS
 - 🎯 **IDFA Support**: Request tracking authorization and get Identifier for Advertisers (iOS)
 - 🔔 **Badge Management**: Update app badge count with permission handling
@@ -121,6 +122,10 @@ Returns comprehensive device information including:
 - `isTV` - Whether device is a TV
 - `isDeveloperModeEnabled` - Whether developer mode is enabled
 - `isRooted` - Whether device is rooted
+- `isDebugMode` - Whether app is running in debug mode
+- `isUsbDebuggingEnabled` - Whether USB debugging is enabled
+- `isDebuggerAttached` - Whether debugger is attached to the process
+- `isHookDetected` - Whether hooking frameworks are detected (Xposed, Frida, Substrate)
 - `numberOfProcessors` - Number of CPU cores
 
 #### IDFA Methods (iOS Only)
@@ -191,6 +196,12 @@ void printDeviceInfo() async {
     print('Is Rooted: ${info.isRooted}');
     print('Developer Mode: ${info.isDeveloperModeEnabled}');
     
+    print('\n=== Security Status ===');
+    print('Debug Mode: ${info.isDebugMode}');
+    print('USB Debugging: ${info.isUsbDebuggingEnabled}');
+    print('Debugger Attached: ${info.isDebuggerAttached}');
+    print('Hook Detected: ${info.isHookDetected}');
+    
     print('\n=== Mobile Services ===');
     print('Google Services: ${info.isGMS}');
     print('Huawei Services: ${info.isHMS}');
@@ -254,6 +265,41 @@ void manageBadge() async {
 }
 ```
 
+### Security Checks
+
+```dart
+void checkSecurity() async {
+  final info = await DeviceHelpers.getInfo();
+  
+  print('\n=== Security Status ===');
+  print('Debug Mode: ${info.isDebugMode}');
+  print('USB Debugging: ${info.isUsbDebuggingEnabled}');
+  print('Debugger Attached: ${info.isDebuggerAttached}');
+  print('Hook Detected: ${info.isHookDetected}');
+  print('Rooted: ${info.isRooted}');
+  
+  // Check for security risks
+  if (info.isDebugMode || info.isUsbDebuggingEnabled || 
+      info.isDebuggerAttached || info.isHookDetected || info.isRooted) {
+    print('⚠️ Security warning: Device may be compromised');
+    // Implement your security logic here
+  }
+}
+```
+
+#### Security Detection Details
+
+The plugin detects various security threats:
+
+- **Debug Mode**: Checks if the app was built with debug flag enabled
+- **USB Debugging**: Detects if USB debugging is enabled on the device
+- **Debugger Attached**: Detects if a debugger is currently attached to the process
+- **Hook Detection**: Detects common hooking frameworks:
+  - **Xposed Framework**: Checks for Xposed classes, files, and system properties
+  - **Frida**: Detects Frida server process, files, and memory maps
+  - **Substrate**: Checks for Substrate framework files
+  - **General Hooks**: Scans for suspicious patterns in loaded libraries
+
 ## Platform Support
 
 | Feature | Android | iOS | Web |
@@ -264,6 +310,7 @@ void manageBadge() async {
 | Settings Navigation | ✅ | ✅ | ❌ |
 | Emulator Detection | ✅ | ✅ | ❌ |
 | Root Detection | ✅ | ✅ | ❌ |
+| Security Checks | ✅ | ✅ | ❌ |
 
 ## Contributing
 

@@ -18,9 +18,6 @@ import kotlinx.coroutines.withContext
  */
 class Idfa(private val context: Context) {
 
-    /** Device information provider for ecosystem detection */
-    private val device = DeviceInfo(context)
-
     /**
      * Retrieves the advertising ID asynchronously
      * Uses coroutines to perform the operation on background thread
@@ -48,9 +45,17 @@ class Idfa(private val context: Context) {
      */
     private fun getAdvertisingId(): String? {
         return try {
+            // Check if device is running HarmonyOS
+            val isHMOS = try {
+                Class.forName("ohos.app.Application")
+                true
+            } catch (e: ClassNotFoundException) {
+                false
+            }
+            
             // Determine which advertising ID service to use based on device ecosystem
             val advertisingIdClientClass = Class.forName(
-                if (device.isHMOS()) "com.huawei.hms.ads.identifier.AdvertisingIdClient"
+                if (isHMOS) "com.huawei.hms.ads.identifier.AdvertisingIdClient"
                 else "com.google.android.gms.ads.identifier.AdvertisingIdClient"
             )
             

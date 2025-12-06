@@ -1,6 +1,5 @@
-// dart format width=80
-// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// coverage:ignore-file
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
@@ -75,6 +74,18 @@ mixin _$DeviceInfo {
   /// True if device is rooted
   bool get isRooted;
 
+  /// True if app is running in debug mode
+  bool get isDebugMode;
+
+  /// True if USB debugging is enabled
+  bool get isUsbDebuggingEnabled;
+
+  /// True if debugger is attached
+  bool get isDebuggerAttached;
+
+  /// True if hooking frameworks detected (Xposed, Frida, etc.)
+  bool get isHookDetected;
+
   /// Number of CPU cores
   int get numberOfProcessors;
 
@@ -123,6 +134,14 @@ mixin _$DeviceInfo {
                 other.isDeveloperModeEnabled == isDeveloperModeEnabled) &&
             (identical(other.isRooted, isRooted) ||
                 other.isRooted == isRooted) &&
+            (identical(other.isDebugMode, isDebugMode) ||
+                other.isDebugMode == isDebugMode) &&
+            (identical(other.isUsbDebuggingEnabled, isUsbDebuggingEnabled) ||
+                other.isUsbDebuggingEnabled == isUsbDebuggingEnabled) &&
+            (identical(other.isDebuggerAttached, isDebuggerAttached) ||
+                other.isDebuggerAttached == isDebuggerAttached) &&
+            (identical(other.isHookDetected, isHookDetected) ||
+                other.isHookDetected == isHookDetected) &&
             (identical(other.numberOfProcessors, numberOfProcessors) ||
                 other.numberOfProcessors == numberOfProcessors));
   }
@@ -151,12 +170,16 @@ mixin _$DeviceInfo {
         isTV,
         isDeveloperModeEnabled,
         isRooted,
+        isDebugMode,
+        isUsbDebuggingEnabled,
+        isDebuggerAttached,
+        isHookDetected,
         numberOfProcessors
       ]);
 
   @override
   String toString() {
-    return 'DeviceInfo(manufacturer: $manufacturer, brand: $brand, model: $model, uuid: $uuid, appVersion: $appVersion, appBundle: $appBundle, appBuild: $appBuild, appName: $appName, os: $os, osVersion: $osVersion, sdkVersion: $sdkVersion, isEmulator: $isEmulator, isTablet: $isTablet, isMIUI: $isMIUI, isGMS: $isGMS, isHMS: $isHMS, isHMOS: $isHMOS, isTV: $isTV, isDeveloperModeEnabled: $isDeveloperModeEnabled, isRooted: $isRooted, numberOfProcessors: $numberOfProcessors)';
+    return 'DeviceInfo(manufacturer: $manufacturer, brand: $brand, model: $model, uuid: $uuid, appVersion: $appVersion, appBundle: $appBundle, appBuild: $appBuild, appName: $appName, os: $os, osVersion: $osVersion, sdkVersion: $sdkVersion, isEmulator: $isEmulator, isTablet: $isTablet, isMIUI: $isMIUI, isGMS: $isGMS, isHMS: $isHMS, isHMOS: $isHMOS, isTV: $isTV, isDeveloperModeEnabled: $isDeveloperModeEnabled, isRooted: $isRooted, isDebugMode: $isDebugMode, isUsbDebuggingEnabled: $isUsbDebuggingEnabled, isDebuggerAttached: $isDebuggerAttached, isHookDetected: $isHookDetected, numberOfProcessors: $numberOfProcessors)';
   }
 }
 
@@ -187,6 +210,10 @@ abstract mixin class $DeviceInfoCopyWith<$Res> {
       bool isTV,
       bool isDeveloperModeEnabled,
       bool isRooted,
+      bool isDebugMode,
+      bool isUsbDebuggingEnabled,
+      bool isDebuggerAttached,
+      bool isHookDetected,
       int numberOfProcessors});
 }
 
@@ -222,6 +249,10 @@ class _$DeviceInfoCopyWithImpl<$Res> implements $DeviceInfoCopyWith<$Res> {
     Object? isTV = null,
     Object? isDeveloperModeEnabled = null,
     Object? isRooted = null,
+    Object? isDebugMode = null,
+    Object? isUsbDebuggingEnabled = null,
+    Object? isDebuggerAttached = null,
+    Object? isHookDetected = null,
     Object? numberOfProcessors = null,
   }) {
     return _then(_self.copyWith(
@@ -305,11 +336,337 @@ class _$DeviceInfoCopyWithImpl<$Res> implements $DeviceInfoCopyWith<$Res> {
           ? _self.isRooted
           : isRooted // ignore: cast_nullable_to_non_nullable
               as bool,
+      isDebugMode: null == isDebugMode
+          ? _self.isDebugMode
+          : isDebugMode // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isUsbDebuggingEnabled: null == isUsbDebuggingEnabled
+          ? _self.isUsbDebuggingEnabled
+          : isUsbDebuggingEnabled // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isDebuggerAttached: null == isDebuggerAttached
+          ? _self.isDebuggerAttached
+          : isDebuggerAttached // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isHookDetected: null == isHookDetected
+          ? _self.isHookDetected
+          : isHookDetected // ignore: cast_nullable_to_non_nullable
+              as bool,
       numberOfProcessors: null == numberOfProcessors
           ? _self.numberOfProcessors
           : numberOfProcessors // ignore: cast_nullable_to_non_nullable
               as int,
     ));
+  }
+}
+
+/// Adds pattern-matching-related methods to [DeviceInfo].
+extension DeviceInfoPatterns on DeviceInfo {
+  /// A variant of `map` that fallback to returning `orElse`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>(
+    TResult Function(_DeviceInfo value)? $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _DeviceInfo() when $default != null:
+        return $default(_that);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// Callbacks receives the raw object, upcasted.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case final Subclass2 value:
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>(
+    TResult Function(_DeviceInfo value) $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _DeviceInfo():
+        return $default(_that);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `map` that fallback to returning `null`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>(
+    TResult? Function(_DeviceInfo value)? $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _DeviceInfo() when $default != null:
+        return $default(_that);
+      case _:
+        return null;
+    }
+  }
+
+  /// A variant of `when` that fallback to an `orElse` callback.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>(
+    TResult Function(
+            String manufacturer,
+            String brand,
+            String model,
+            String uuid,
+            String appVersion,
+            String appBundle,
+            String appBuild,
+            String appName,
+            String os,
+            String osVersion,
+            String sdkVersion,
+            bool isEmulator,
+            bool isTablet,
+            bool isMIUI,
+            bool isGMS,
+            bool isHMS,
+            bool isHMOS,
+            bool isTV,
+            bool isDeveloperModeEnabled,
+            bool isRooted,
+            bool isDebugMode,
+            bool isUsbDebuggingEnabled,
+            bool isDebuggerAttached,
+            bool isHookDetected,
+            int numberOfProcessors)?
+        $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _DeviceInfo() when $default != null:
+        return $default(
+            _that.manufacturer,
+            _that.brand,
+            _that.model,
+            _that.uuid,
+            _that.appVersion,
+            _that.appBundle,
+            _that.appBuild,
+            _that.appName,
+            _that.os,
+            _that.osVersion,
+            _that.sdkVersion,
+            _that.isEmulator,
+            _that.isTablet,
+            _that.isMIUI,
+            _that.isGMS,
+            _that.isHMS,
+            _that.isHMOS,
+            _that.isTV,
+            _that.isDeveloperModeEnabled,
+            _that.isRooted,
+            _that.isDebugMode,
+            _that.isUsbDebuggingEnabled,
+            _that.isDebuggerAttached,
+            _that.isHookDetected,
+            _that.numberOfProcessors);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// As opposed to `map`, this offers destructuring.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case Subclass2(:final field2):
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>(
+    TResult Function(
+            String manufacturer,
+            String brand,
+            String model,
+            String uuid,
+            String appVersion,
+            String appBundle,
+            String appBuild,
+            String appName,
+            String os,
+            String osVersion,
+            String sdkVersion,
+            bool isEmulator,
+            bool isTablet,
+            bool isMIUI,
+            bool isGMS,
+            bool isHMS,
+            bool isHMOS,
+            bool isTV,
+            bool isDeveloperModeEnabled,
+            bool isRooted,
+            bool isDebugMode,
+            bool isUsbDebuggingEnabled,
+            bool isDebuggerAttached,
+            bool isHookDetected,
+            int numberOfProcessors)
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _DeviceInfo():
+        return $default(
+            _that.manufacturer,
+            _that.brand,
+            _that.model,
+            _that.uuid,
+            _that.appVersion,
+            _that.appBundle,
+            _that.appBuild,
+            _that.appName,
+            _that.os,
+            _that.osVersion,
+            _that.sdkVersion,
+            _that.isEmulator,
+            _that.isTablet,
+            _that.isMIUI,
+            _that.isGMS,
+            _that.isHMS,
+            _that.isHMOS,
+            _that.isTV,
+            _that.isDeveloperModeEnabled,
+            _that.isRooted,
+            _that.isDebugMode,
+            _that.isUsbDebuggingEnabled,
+            _that.isDebuggerAttached,
+            _that.isHookDetected,
+            _that.numberOfProcessors);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `when` that fallback to returning `null`
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>(
+    TResult? Function(
+            String manufacturer,
+            String brand,
+            String model,
+            String uuid,
+            String appVersion,
+            String appBundle,
+            String appBuild,
+            String appName,
+            String os,
+            String osVersion,
+            String sdkVersion,
+            bool isEmulator,
+            bool isTablet,
+            bool isMIUI,
+            bool isGMS,
+            bool isHMS,
+            bool isHMOS,
+            bool isTV,
+            bool isDeveloperModeEnabled,
+            bool isRooted,
+            bool isDebugMode,
+            bool isUsbDebuggingEnabled,
+            bool isDebuggerAttached,
+            bool isHookDetected,
+            int numberOfProcessors)?
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _DeviceInfo() when $default != null:
+        return $default(
+            _that.manufacturer,
+            _that.brand,
+            _that.model,
+            _that.uuid,
+            _that.appVersion,
+            _that.appBundle,
+            _that.appBuild,
+            _that.appName,
+            _that.os,
+            _that.osVersion,
+            _that.sdkVersion,
+            _that.isEmulator,
+            _that.isTablet,
+            _that.isMIUI,
+            _that.isGMS,
+            _that.isHMS,
+            _that.isHMOS,
+            _that.isTV,
+            _that.isDeveloperModeEnabled,
+            _that.isRooted,
+            _that.isDebugMode,
+            _that.isUsbDebuggingEnabled,
+            _that.isDebuggerAttached,
+            _that.isHookDetected,
+            _that.numberOfProcessors);
+      case _:
+        return null;
+    }
   }
 }
 
@@ -337,6 +694,10 @@ class _DeviceInfo implements DeviceInfo {
       this.isTV = false,
       this.isDeveloperModeEnabled = false,
       this.isRooted = false,
+      this.isDebugMode = false,
+      this.isUsbDebuggingEnabled = false,
+      this.isDebuggerAttached = false,
+      this.isHookDetected = false,
       this.numberOfProcessors = 0});
   factory _DeviceInfo.fromJson(Map<String, dynamic> json) =>
       _$DeviceInfoFromJson(json);
@@ -441,6 +802,26 @@ class _DeviceInfo implements DeviceInfo {
   @JsonKey()
   final bool isRooted;
 
+  /// True if app is running in debug mode
+  @override
+  @JsonKey()
+  final bool isDebugMode;
+
+  /// True if USB debugging is enabled
+  @override
+  @JsonKey()
+  final bool isUsbDebuggingEnabled;
+
+  /// True if debugger is attached
+  @override
+  @JsonKey()
+  final bool isDebuggerAttached;
+
+  /// True if hooking frameworks detected (Xposed, Frida, etc.)
+  @override
+  @JsonKey()
+  final bool isHookDetected;
+
   /// Number of CPU cores
   @override
   @JsonKey()
@@ -496,6 +877,14 @@ class _DeviceInfo implements DeviceInfo {
                 other.isDeveloperModeEnabled == isDeveloperModeEnabled) &&
             (identical(other.isRooted, isRooted) ||
                 other.isRooted == isRooted) &&
+            (identical(other.isDebugMode, isDebugMode) ||
+                other.isDebugMode == isDebugMode) &&
+            (identical(other.isUsbDebuggingEnabled, isUsbDebuggingEnabled) ||
+                other.isUsbDebuggingEnabled == isUsbDebuggingEnabled) &&
+            (identical(other.isDebuggerAttached, isDebuggerAttached) ||
+                other.isDebuggerAttached == isDebuggerAttached) &&
+            (identical(other.isHookDetected, isHookDetected) ||
+                other.isHookDetected == isHookDetected) &&
             (identical(other.numberOfProcessors, numberOfProcessors) ||
                 other.numberOfProcessors == numberOfProcessors));
   }
@@ -524,12 +913,16 @@ class _DeviceInfo implements DeviceInfo {
         isTV,
         isDeveloperModeEnabled,
         isRooted,
+        isDebugMode,
+        isUsbDebuggingEnabled,
+        isDebuggerAttached,
+        isHookDetected,
         numberOfProcessors
       ]);
 
   @override
   String toString() {
-    return 'DeviceInfo(manufacturer: $manufacturer, brand: $brand, model: $model, uuid: $uuid, appVersion: $appVersion, appBundle: $appBundle, appBuild: $appBuild, appName: $appName, os: $os, osVersion: $osVersion, sdkVersion: $sdkVersion, isEmulator: $isEmulator, isTablet: $isTablet, isMIUI: $isMIUI, isGMS: $isGMS, isHMS: $isHMS, isHMOS: $isHMOS, isTV: $isTV, isDeveloperModeEnabled: $isDeveloperModeEnabled, isRooted: $isRooted, numberOfProcessors: $numberOfProcessors)';
+    return 'DeviceInfo(manufacturer: $manufacturer, brand: $brand, model: $model, uuid: $uuid, appVersion: $appVersion, appBundle: $appBundle, appBuild: $appBuild, appName: $appName, os: $os, osVersion: $osVersion, sdkVersion: $sdkVersion, isEmulator: $isEmulator, isTablet: $isTablet, isMIUI: $isMIUI, isGMS: $isGMS, isHMS: $isHMS, isHMOS: $isHMOS, isTV: $isTV, isDeveloperModeEnabled: $isDeveloperModeEnabled, isRooted: $isRooted, isDebugMode: $isDebugMode, isUsbDebuggingEnabled: $isUsbDebuggingEnabled, isDebuggerAttached: $isDebuggerAttached, isHookDetected: $isHookDetected, numberOfProcessors: $numberOfProcessors)';
   }
 }
 
@@ -562,6 +955,10 @@ abstract mixin class _$DeviceInfoCopyWith<$Res>
       bool isTV,
       bool isDeveloperModeEnabled,
       bool isRooted,
+      bool isDebugMode,
+      bool isUsbDebuggingEnabled,
+      bool isDebuggerAttached,
+      bool isHookDetected,
       int numberOfProcessors});
 }
 
@@ -597,6 +994,10 @@ class __$DeviceInfoCopyWithImpl<$Res> implements _$DeviceInfoCopyWith<$Res> {
     Object? isTV = null,
     Object? isDeveloperModeEnabled = null,
     Object? isRooted = null,
+    Object? isDebugMode = null,
+    Object? isUsbDebuggingEnabled = null,
+    Object? isDebuggerAttached = null,
+    Object? isHookDetected = null,
     Object? numberOfProcessors = null,
   }) {
     return _then(_DeviceInfo(
@@ -679,6 +1080,22 @@ class __$DeviceInfoCopyWithImpl<$Res> implements _$DeviceInfoCopyWith<$Res> {
       isRooted: null == isRooted
           ? _self.isRooted
           : isRooted // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isDebugMode: null == isDebugMode
+          ? _self.isDebugMode
+          : isDebugMode // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isUsbDebuggingEnabled: null == isUsbDebuggingEnabled
+          ? _self.isUsbDebuggingEnabled
+          : isUsbDebuggingEnabled // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isDebuggerAttached: null == isDebuggerAttached
+          ? _self.isDebuggerAttached
+          : isDebuggerAttached // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isHookDetected: null == isHookDetected
+          ? _self.isHookDetected
+          : isHookDetected // ignore: cast_nullable_to_non_nullable
               as bool,
       numberOfProcessors: null == numberOfProcessors
           ? _self.numberOfProcessors

@@ -148,7 +148,7 @@ class DeviceHelpers : FlutterPlugin, MethodCallHandler, ActivityAware {
      * @param result Flutter result callback
      */
     private fun openAppSettings(result: Result) {
-        routing?.openAppSettings() ?: result.error(
+        routing?.openAppSettings(result) ?: result.error(
             "UNAVAILABLE",
             "Activity is not attached.",
             null
@@ -162,7 +162,7 @@ class DeviceHelpers : FlutterPlugin, MethodCallHandler, ActivityAware {
      * @param result Flutter result callback
      */
     private fun openAppNotificationSettings(result: Result) {
-        routing?.openAppNotificationSettings() ?: result.error(
+        routing?.openAppNotificationSettings(result) ?: result.error(
             "UNAVAILABLE",
             "Activity is not attached.",
             null

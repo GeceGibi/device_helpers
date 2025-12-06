@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import io.flutter.plugin.common.MethodChannel
 
 /**
  * Routing - Activity-based navigation utility
@@ -24,8 +25,10 @@ class Routing(private val activity: Activity) {
      * Opens the app settings page
      * Navigates to the system settings page for the current app
      * Uses ACTION_APPLICATION_DETAILS_SETTINGS intent
+     * 
+     * @param result Flutter result callback to return success/failure
      */
-    fun openAppSettings() {
+    fun openAppSettings(result: MethodChannel.Result) {
         try {
             // Create intent for app settings
             Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
@@ -34,8 +37,9 @@ class Routing(private val activity: Activity) {
                 // Start the settings activity
                 activity.startActivity(this)
             }
+            result.success(true)
         } catch (e: Exception) {
-            // Handle exception if settings cannot be opened
+            result.error("SETTINGS_ERROR", "Cannot open app settings", e.message)
         }
     }
 
@@ -43,8 +47,10 @@ class Routing(private val activity: Activity) {
      * Opens the app notification settings page
      * Navigates to notification settings for the current app
      * Uses different intents based on Android version
+     * 
+     * @param result Flutter result callback to return success/failure
      */
-    fun openAppNotificationSettings() {
+    fun openAppNotificationSettings(result: MethodChannel.Result) {
         try {
             val intent = Intent(
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -65,8 +71,9 @@ class Routing(private val activity: Activity) {
             }
             // Start the settings activity
             activity.startActivity(intent)
+            result.success(true)
         } catch (e: Exception) {
-            // Handle exception if notification settings cannot be opened
+            result.error("SETTINGS_ERROR", "Cannot open notification settings", e.message)
         }
     }
 }

@@ -71,6 +71,18 @@ abstract class DeviceInfo with _$DeviceInfo {
     /// True if device is rooted
     @Default(false) bool isRooted,
 
+    /// True if app is running in debug mode
+    @Default(false) bool isDebugMode,
+
+    /// True if USB debugging is enabled
+    @Default(false) bool isUsbDebuggingEnabled,
+
+    /// True if debugger is attached
+    @Default(false) bool isDebuggerAttached,
+
+    /// True if hooking frameworks detected (Xposed, Frida, etc.)
+    @Default(false) bool isHookDetected,
+
     /// Number of CPU cores
     @Default(0) int numberOfProcessors,
   }) = _DeviceInfo;
