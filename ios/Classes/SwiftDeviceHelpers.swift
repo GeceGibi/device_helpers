@@ -617,10 +617,8 @@ private extension SwiftDeviceHelpers{
         return true
         #else
         // Check bundle configuration
-        if let bundlePath = Bundle.main.bundlePath {
-            return bundlePath.contains("Debug") || bundlePath.contains("debug")
-        }
-        return false
+        let bundlePath = Bundle.main.bundlePath
+        return bundlePath.contains("Debug") || bundlePath.contains("debug")
         #endif
     }
     
@@ -665,7 +663,7 @@ private extension SwiftDeviceHelpers{
         if result == 0 {
             // Check if P_TRACED flag is set (indicates debugger is attached)
             // P_TRACED = 0x00000800
-            let P_TRACED: UInt32 = 0x00000800
+            let P_TRACED: Int32 = 0x00000800
             return (info.kp_proc.p_flag & P_TRACED) != 0
         }
         
@@ -839,8 +837,8 @@ private extension SwiftDeviceHelpers{
      * @return true if process is running, false otherwise
      */
     private func isProcessRunning(processName: String) -> Bool {
-        let task = Process()
-        task.launchPath = "/bin/ps"
+        let task = Foundation.Process()
+        task.executableURL = URL(fileURLWithPath: "/bin/ps")
         task.arguments = ["-A"]
         
         let pipe = Pipe()
