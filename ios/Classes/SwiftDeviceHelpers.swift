@@ -55,6 +55,14 @@ private struct DeviceInfo {
     let isDeveloperModeEnabled: Bool
     /** Whether device is jailbroken */
     let isRooted: Bool
+    /** Whether app is running in debug mode */
+    let isDebugMode: Bool
+    /** Whether USB debugging is enabled (iOS Developer Mode) */
+    let isUsbDebuggingEnabled: Bool
+    /** Whether debugger is attached */
+    let isDebuggerAttached: Bool
+    /** Whether hooking frameworks are detected */
+    let isHookDetected: Bool
     
     /**
      * Converts device info to dictionary for Flutter communication
@@ -80,7 +88,11 @@ private struct DeviceInfo {
             "isHmos": isHmos,
             "isTv": isTv,
             "isDeveloperModeEnabled": isDeveloperModeEnabled,
-            "isRooted": isRooted
+            "isRooted": isRooted,
+            "isDebugMode": isDebugMode,
+            "isUsbDebuggingEnabled": isUsbDebuggingEnabled,
+            "isDebuggerAttached": isDebuggerAttached,
+            "isHookDetected": isHookDetected
         ]
     }
 }
@@ -314,7 +326,11 @@ private extension SwiftDeviceHelpers {
             isHmos: false,
             isTv: false,
             isDeveloperModeEnabled: isLikelyDeveloperModeEnabled(),
-            isRooted: isRooted()
+            isRooted: isRooted(),
+            isDebugMode: isDebugMode(),
+            isUsbDebuggingEnabled: isUsbDebuggingEnabled(),
+            isDebuggerAttached: isDebuggerAttached(),
+            isHookDetected: isHookDetected()
         )
         
         result(deviceInfo.toDictionary)
@@ -588,6 +604,261 @@ private extension SwiftDeviceHelpers{
         }
         
         return true
+    }
+    
+    /**
+     * Checks if the app is running in debug mode
+     * Detects if the app was built with debug configuration
+     * 
+     * @return true if app is in debug mode, false otherwise
+     */
+    func isDebugMode() -> Bool {
+        #if DEBUG
+        return true
+        #else
+        // Check bundle configuration
+        if let bundlePath = Bundle.main.bundlePath {
+            return bundlePath.contains("Debug") || bundlePath.contains("debug")
+        }
+        return false
+        #endif
+    }
+    
+    /**
+     * Checks if USB debugging/Developer Mode is enabled
+     * iOS 16+ has Developer Mode that needs to be enabled
+     * 
+     * @return true if developer mode is enabled, false otherwise
+     */
+    func isUsbDebuggingEnabled() -> Bool {
+        // Check for developer mode indicators
+        if FileManager.default.fileExists(atPath: "/Developer") {
+            return true
+        }
+        
+        // Check for Xcode developer tools
+        if FileManager.default.fileExists(atPath: "/Applications/Xcode.app") {
+            // Additional check: try to access developer directory
+            let developerPath = "/var/db/dyld/dyld_shared_cache_arm64"
+            if FileManager.default.fileExists(atPath: developerPath) {
+                return true
+            }
+        }
+        
+        return false
+    }
+    
+    /**
+     * Checks if a debugger is currently attached to the process
+     * Uses sysctl to detect debugger attachment
+     * 
+     * @return true if debugger is attached, false otherwise
+     */
+    func isDebuggerAttached() -> Bool {
+        // Method 1: Use sysctl to check for debugger
+        var mib: [Int32] = [CTL_KERN, KERN_PROC, KERN_PROC_PID, getpid()]
+        var info = kinfo_proc()
+        var size = MemoryLayout<kinfo_proc>.stride
+        
+        let result = sysctl(&mib, u_int(mib.count), &info, &size, nil, 0)
+        
+        if result == 0 {
+            // Check if P_TRACED flag is set (indicates debugger is attached)
+            // P_TRACED = 0x00000800
+            let P_TRACED: UInt32 = 0x00000800
+            return (info.kp_proc.p_flag & P_TRACED) != 0
+        }
+        
+        // Method 2: Check for common debugger processes
+        let debuggerProcesses = ["lldb", "gdb", "debugserver"]
+        for process in debuggerProcesses {
+            if isProcessRunning(processName: process) {
+                return true
+            }
+        }
+        
+        return false
+    }
+    
+    /**
+     * Checks if hooking frameworks are detected
+     * Detects common hooking frameworks like Frida, SubstrateLoader, Cycript
+     * 
+     * @return true if any hooking framework is detected, false otherwise
+     */
+    func isHookDetected() -> Bool {
+        // Check for Frida
+        if isFridaDetected() {
+            return true
+        }
+        
+        // Check for SubstrateLoader (already checked in jailbreak detection, but double-check)
+        if isSubstrateDetected() {
+            return true
+        }
+        
+        // Check for Cycript
+        if isCycriptDetected() {
+            return true
+        }
+        
+        // Check for other hooking indicators
+        if isHookingIndicatorsPresent() {
+            return true
+        }
+        
+        return false
+    }
+    
+    /**
+     * Checks if Frida is running
+     * Frida is a dynamic instrumentation toolkit
+     * 
+     * @return true if Frida is detected, false otherwise
+     */
+    private func isFridaDetected() -> Bool {
+        // Check for Frida server process
+        if isProcessRunning(processName: "frida-server") {
+            return true
+        }
+        
+        // Check for Frida libraries in loaded images
+        let imageCount = _dyld_image_count()
+        for i in 0..<imageCount {
+            if let name = _dyld_get_image_name(i) {
+                let path = String(cString: name)
+                if path.lowercased().contains("frida") ||
+                   path.lowercased().contains("gadget") {
+                    return true
+                }
+            }
+        }
+        
+        // Check for Frida files
+        let fridaFiles = [
+            "/usr/lib/frida/frida-agent.dylib",
+            "/Library/MobileSubstrate/DynamicLibraries/frida.dylib"
+        ]
+        
+        for file in fridaFiles {
+            if FileManager.default.fileExists(atPath: file) {
+                return true
+            }
+        }
+        
+        return false
+    }
+    
+    /**
+     * Checks if SubstrateLoader is present
+     * SubstrateLoader is used by jailbreak tweaks
+     * 
+     * @return true if SubstrateLoader is detected, false otherwise
+     */
+    private func isSubstrateDetected() -> Bool {
+        let imageCount = _dyld_image_count()
+        for i in 0..<imageCount {
+            if let name = _dyld_get_image_name(i) {
+                let path = String(cString: name)
+                if path.contains("MobileSubstrate") ||
+                   path.contains("SubstrateLoader") ||
+                   path.contains("substitute") {
+                    return true
+                }
+            }
+        }
+        
+        return false
+    }
+    
+    /**
+     * Checks if Cycript is present
+     * Cycript is a runtime manipulation tool
+     * 
+     * @return true if Cycript is detected, false otherwise
+     */
+    private func isCycriptDetected() -> Bool {
+        // Check for Cycript process
+        if isProcessRunning(processName: "cycript") {
+            return true
+        }
+        
+        // Check for Cycript libraries
+        let imageCount = _dyld_image_count()
+        for i in 0..<imageCount {
+            if let name = _dyld_get_image_name(i) {
+                let path = String(cString: name)
+                if path.lowercased().contains("cycript") {
+                    return true
+                }
+            }
+        }
+        
+        return false
+    }
+    
+    /**
+     * Checks for general hooking indicators
+     * Looks for common signs of runtime manipulation
+     * 
+     * @return true if hooking indicators are present, false otherwise
+     */
+    private func isHookingIndicatorsPresent() -> Bool {
+        // Check loaded libraries for suspicious patterns
+        let imageCount = _dyld_image_count()
+        for i in 0..<imageCount {
+            if let name = _dyld_get_image_name(i) {
+                let path = String(cString: name)
+                let lowerPath = path.lowercased()
+                
+                let suspiciousPatterns = [
+                    "hook",
+                    "inject",
+                    "cycript",
+                    "frida",
+                    "substrate",
+                    "theos"
+                ]
+                
+                for pattern in suspiciousPatterns {
+                    if lowerPath.contains(pattern) {
+                        return true
+                    }
+                }
+            }
+        }
+        
+        return false
+    }
+    
+    /**
+     * Checks if a process is running
+     * Uses ps command to check for process existence
+     * 
+     * @param processName Name of the process to check
+     * @return true if process is running, false otherwise
+     */
+    private func isProcessRunning(processName: String) -> Bool {
+        let task = Process()
+        task.launchPath = "/bin/ps"
+        task.arguments = ["-A"]
+        
+        let pipe = Pipe()
+        task.standardOutput = pipe
+        
+        do {
+            try task.run()
+            task.waitUntilExit()
+            
+            let data = pipe.fileHandleForReading.readDataToEndOfFile()
+            if let output = String(data: data, encoding: .utf8) {
+                return output.lowercased().contains(processName.lowercased())
+            }
+        } catch {
+            // Ignore errors
+        }
+        
+        return false
     }
 }
 
