@@ -618,9 +618,18 @@ private extension SwiftDeviceHelpers{
         #if DEBUG
         return true
         #else
-        // Check bundle configuration
+        // Check bundle configuration in path
         let bundlePath = Bundle.main.bundlePath
-        return bundlePath.contains("Debug") || bundlePath.contains("debug")
+        if bundlePath.contains("Debug") || bundlePath.contains("debug") {
+            return true
+        }
+        
+        // Check for development provisioning profile
+        if let _ = Bundle.main.path(forResource: "embedded", ofType: "mobileprovision") {
+            return true
+        }
+        
+        return false
         #endif
     }
     

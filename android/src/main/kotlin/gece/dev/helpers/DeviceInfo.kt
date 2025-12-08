@@ -274,12 +274,25 @@ class DeviceInfo(private val context: Context) {
     /**
      * Checks if the app is running in debug mode
      * Detects if the app was built with debug flag enabled
+     * Also checks for BuildConfig.DEBUG flag
      * 
      * @return true if app is in debug mode, false otherwise
      */
     private fun isDebugMode(): Boolean {
         return try {
-            (context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
+            // Check ApplicationInfo flag (most reliable)
+            val isDebuggable = (context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
+            
+            // Additional check: Try to access BuildConfig.DEBUG via reflection
+            val buildConfigDebug = try {
+                val buildConfigClass = Class.forName("${context.packageName}.BuildConfig")
+                val debugField = buildConfigClass.getField("DEBUG")
+                debugField.getBoolean(null)
+            } catch (e: Exception) {
+                false
+            }
+            
+            isDebuggable || buildConfigDebug
         } catch (e: Exception) {
             false
         }
