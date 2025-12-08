@@ -626,26 +626,23 @@ private extension SwiftDeviceHelpers{
     
     /**
      * Checks if USB debugging/Developer Mode is enabled
-     * iOS 16+ has Developer Mode that needs to be enabled
+     * Detects developer environment indicators
      * 
      * @return true if developer mode is enabled, false otherwise
      */
     func isUsbDebuggingEnabled() -> Bool {
-        // Check for developer mode indicators
-        if FileManager.default.fileExists(atPath: "/Developer") {
-            return true
+        // On iOS, check if we're running in a development environment
+        #if DEBUG
+        return true
+        #else
+        // Check for developer provisioning profile
+        guard let provisioningPath = Bundle.main.path(forResource: "embedded", ofType: "mobileprovision") else {
+            return false
         }
         
-        // Check for Xcode developer tools
-        if FileManager.default.fileExists(atPath: "/Applications/Xcode.app") {
-            // Additional check: try to access developer directory
-            let developerPath = "/var/db/dyld/dyld_shared_cache_arm64"
-            if FileManager.default.fileExists(atPath: developerPath) {
-                return true
-            }
-        }
-        
-        return false
+        // If provisioning profile exists, it's likely a development build
+        return FileManager.default.fileExists(atPath: provisioningPath)
+        #endif
     }
     
     /**
@@ -655,29 +652,21 @@ private extension SwiftDeviceHelpers{
      * @return true if debugger is attached, false otherwise
      */
     func isDebuggerAttached() -> Bool {
-        // Method 1: Use sysctl to check for debugger
+        // Use sysctl to check for debugger
         var mib: [Int32] = [CTL_KERN, KERN_PROC, KERN_PROC_PID, getpid()]
         var info = kinfo_proc()
         var size = MemoryLayout<kinfo_proc>.stride
         
         let result = sysctl(&mib, u_int(mib.count), &info, &size, nil, 0)
         
-        if result == 0 {
-            // Check if P_TRACED flag is set (indicates debugger is attached)
-            // P_TRACED = 0x00000800
-            let P_TRACED: Int32 = 0x00000800
-            return (info.kp_proc.p_flag & P_TRACED) != 0
+        guard result == 0 else {
+            return false
         }
         
-        // Method 2: Check for common debugger processes
-        let debuggerProcesses = ["lldb", "gdb", "debugserver"]
-        for process in debuggerProcesses {
-            if isProcessRunning(processName: process) {
-                return true
-            }
-        }
-        
-        return false
+        // Check if P_TRACED flag is set (indicates debugger is attached)
+        // P_TRACED = 0x00000800
+        let P_TRACED: Int32 = 0x00000800
+        return (info.kp_proc.p_flag & P_TRACED) != 0
     }
     
     /**
@@ -717,36 +706,24 @@ private extension SwiftDeviceHelpers{
      * @return true if Frida is detected, false otherwise
      */
     private func isFridaDetected() -> Bool {
-        // Check for Frida server process
-        if isProcessRunning(processName: "frida-server") {
-            return true
-        }
-        
         // Check for Frida libraries in loaded images
         let imageCount = _dyld_image_count()
         for i in 0..<imageCount {
-            if let name = _dyld_get_image_name(i) {
-                let path = String(cString: name)
-                if path.lowercased().contains("frida") ||
-                   path.lowercased().contains("gadget") {
-                    return true
-                }
+            guard let name = _dyld_get_image_name(i) else { continue }
+            let path = String(cString: name).lowercased()
+            if path.contains("frida") || path.contains("gadget") {
+                return true
             }
         }
         
         // Check for Frida files
         let fridaFiles = [
             "/usr/lib/frida/frida-agent.dylib",
-            "/Library/MobileSubstrate/DynamicLibraries/frida.dylib"
+            "/Library/MobileSubstrate/DynamicLibraries/frida.dylib",
+            "/usr/lib/libfrida-gadget.dylib"
         ]
         
-        for file in fridaFiles {
-            if FileManager.default.fileExists(atPath: file) {
-                return true
-            }
-        }
-        
-        return false
+        return fridaFiles.contains { FileManager.default.fileExists(atPath: $0) }
     }
     
     /**
@@ -778,19 +755,13 @@ private extension SwiftDeviceHelpers{
      * @return true if Cycript is detected, false otherwise
      */
     private func isCycriptDetected() -> Bool {
-        // Check for Cycript process
-        if isProcessRunning(processName: "cycript") {
-            return true
-        }
-        
         // Check for Cycript libraries
         let imageCount = _dyld_image_count()
         for i in 0..<imageCount {
-            if let name = _dyld_get_image_name(i) {
-                let path = String(cString: name)
-                if path.lowercased().contains("cycript") {
-                    return true
-                }
+            guard let name = _dyld_get_image_name(i) else { continue }
+            let path = String(cString: name).lowercased()
+            if path.contains("cycript") {
+                return true
             }
         }
         
@@ -804,68 +775,16 @@ private extension SwiftDeviceHelpers{
      * @return true if hooking indicators are present, false otherwise
      */
     private func isHookingIndicatorsPresent() -> Bool {
+        let suspiciousPatterns = ["hook", "inject", "cycript", "frida", "substrate", "theos"]
+        
         // Check loaded libraries for suspicious patterns
         let imageCount = _dyld_image_count()
         for i in 0..<imageCount {
-            if let name = _dyld_get_image_name(i) {
-                let path = String(cString: name)
-                let lowerPath = path.lowercased()
-                
-                let suspiciousPatterns = [
-                    "hook",
-                    "inject",
-                    "cycript",
-                    "frida",
-                    "substrate",
-                    "theos"
-                ]
-                
-                for pattern in suspiciousPatterns {
-                    if lowerPath.contains(pattern) {
-                        return true
-                    }
-                }
-            }
-        }
-        
-        return false
-    }
-    
-    /**
-     * Checks if a process is running
-     * Note: iOS sandbox restrictions prevent direct process checking
-     * This method uses alternative detection methods
-     * 
-     * @param processName Name of the process to check
-     * @return true if process indicators are found, false otherwise
-     */
-    private func isProcessRunning(processName: String) -> Bool {
-        // iOS sandbox prevents direct process checking via ps command
-        // Instead, we check for process-related files and libraries
-        
-        // Check for process-specific files
-        let processFiles: [String: [String]] = [
-            "lldb": ["/usr/bin/lldb", "/Developer/usr/bin/lldb"],
-            "gdb": ["/usr/bin/gdb", "/Developer/usr/bin/gdb"],
-            "debugserver": ["/Developer/usr/bin/debugserver"]
-        ]
-        
-        if let files = processFiles[processName.lowercased()] {
-            for file in files {
-                if FileManager.default.fileExists(atPath: file) {
-                    return true
-                }
-            }
-        }
-        
-        // Check loaded libraries for process-related indicators
-        let imageCount = _dyld_image_count()
-        for i in 0..<imageCount {
-            if let name = _dyld_get_image_name(i) {
-                let path = String(cString: name)
-                if path.lowercased().contains(processName.lowercased()) {
-                    return true
-                }
+            guard let name = _dyld_get_image_name(i) else { continue }
+            let lowerPath = String(cString: name).lowercased()
+            
+            if suspiciousPatterns.contains(where: { lowerPath.contains($0) }) {
+                return true
             }
         }
         

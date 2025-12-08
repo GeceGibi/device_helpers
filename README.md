@@ -32,11 +32,17 @@ flutter pub get
 
 ## What's New in 1.6.0
 
-- 🔒 **Enhanced Security**: Comprehensive security checks including debug mode, USB debugging, debugger detection, and hook framework detection (Xposed, Frida, Substrate)
-- 🌐 **Web Support**: Full web platform implementation with browser and OS detection
+- 🔒 **Enhanced Security**: Comprehensive security checks following OWASP Mobile Top 10 2024-2025 standards
+  - Debug mode detection (build configuration check)
+  - USB debugging detection (ADB and development settings)
+  - Debugger attachment detection (runtime debugger check)
+  - Hook framework detection (Xposed, Frida, Substrate, Cycript)
+  - Optimized /proc/self/maps scanning for better performance
+- 🌐 **Web Support**: Full web platform implementation with browser and OS detection using `package:web`
 - ✅ **Improved Detection**: More reliable GMS/HMS detection with package verification
-- 🚀 **Modern APIs**: Migrated to `package:web` for better web support
-- 🔧 **Better Error Handling**: Improved error handling across all platforms
+- 🚀 **Modern APIs**: Migrated to `package:web` (v1.1.0+) for better web support
+- 🔧 **Better Error Handling**: Resource leak fixes, improved exception handling
+- ⚡ **Performance**: Optimized file reading for large proc files, buffered I/O operations
 
 ## Quick Start
 
@@ -83,7 +89,9 @@ For IDFA functionality, add the following to your `ios/Runner/Info.plist`:
 <string>This app needs permission to track activity for advertising purposes.</string>
 ```
 
-### Android Configuration (Huawei Support)
+### Android Configuration
+
+#### Huawei Support (Optional)
 
 To support Huawei Mobile Services, add the HMS repository to your `android/build.gradle`:
 
@@ -300,18 +308,36 @@ void checkSecurity() async {
 }
 ```
 
-#### Security Detection Details
+#### Security Detection Details (2024-2025)
 
-The plugin detects various security threats:
+The plugin implements OWASP Mobile Top 10 compliant security checks:
 
-- **Debug Mode**: Checks if the app was built with debug flag enabled
-- **USB Debugging**: Detects if USB debugging is enabled on the device
-- **Debugger Attached**: Detects if a debugger is currently attached to the process
-- **Hook Detection**: Detects common hooking frameworks:
-  - **Xposed Framework**: Checks for Xposed classes, files, and system properties
-  - **Frida**: Detects Frida server process, files, and memory maps
-  - **Substrate**: Checks for Substrate framework files
-  - **General Hooks**: Scans for suspicious patterns in loaded libraries
+**Android:**
+- **Debug Mode**: Checks `ApplicationInfo.FLAG_DEBUGGABLE` flag
+- **USB Debugging**: Checks both `ADB_ENABLED` and `DEVELOPMENT_SETTINGS_ENABLED`
+- **Debugger Attached**: Uses `Debug.isDebuggerConnected()` API
+- **Root Detection**: RootBeer library + custom checks (Magisk, test-keys, su binaries)
+- **Hook Detection**:
+  - **Xposed/LSPosed**: Class loading, file system checks, system properties
+  - **Frida**: Process scanning, /proc/self/maps analysis (optimized buffered reading)
+  - **Substrate**: Library detection
+  - **General**: Pattern matching in loaded libraries
+
+**iOS:**
+- **Debug Mode**: `#if DEBUG` + bundle path check
+- **Developer Mode**: Provisioning profile detection
+- **Debugger Attached**: sysctl with P_TRACED flag check
+- **Jailbreak Detection**: Cydia, Sileo, sandbox integrity, URL schemes, dynamic libraries
+- **Hook Detection**:
+  - **Frida**: dyld image scanning
+  - **Substrate/Cycript**: Library detection
+  - **General**: Pattern matching in loaded images
+
+**Important Notes:**
+- All checks are client-side and can be bypassed
+- Use in combination with server-side validation
+- Consider Firebase App Check for backend protection
+- Update regularly as bypass techniques evolve
 
 ## Platform Support
 

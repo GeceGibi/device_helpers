@@ -97,15 +97,24 @@ class DeviceInfo(private val context: Context) {
 
     /**
      * Checks if developer mode is enabled on the device
-     * Uses system settings to determine developer mode status
+     * Also checks for development settings enabled flag
      * 
      * @return true if developer mode is enabled, false otherwise
      */
     private fun isDeveloperModeEnabled(): Boolean {
         return try {
-            Settings.Global.getInt(
+            // Check if USB debugging is enabled
+            val adbEnabled = Settings.Global.getInt(
                 context.contentResolver, Settings.Global.ADB_ENABLED, 0
             ) != 0
+            
+            // Check if development settings are enabled
+            @Suppress("DEPRECATION")
+            val devSettingsEnabled = Settings.Global.getInt(
+                context.contentResolver, Settings.Global.DEVELOPMENT_SETTINGS_ENABLED, 0
+            ) != 0
+            
+            adbEnabled || devSettingsEnabled
         } catch (e: Exception) {
             false
         }
@@ -149,8 +158,9 @@ class DeviceInfo(private val context: Context) {
         // Try to execute 'su' command to check if it's available
         try {
             val process = Runtime.getRuntime().exec(arrayOf("/system/xbin/which", "su"))
-            val bufferedReader = BufferedReader(InputStreamReader(process.inputStream))
-            if (bufferedReader.readLine() != null) return true
+            BufferedReader(InputStreamReader(process.inputStream)).use { reader ->
+                if (reader.readLine() != null) return true
+            }
         } catch (_: Exception) {}
 
         return false
@@ -385,11 +395,12 @@ class DeviceInfo(private val context: Context) {
         // Check for Frida server process
         try {
             val process = Runtime.getRuntime().exec("ps")
-            val reader = BufferedReader(InputStreamReader(process.inputStream))
-            var line: String?
-            while (reader.readLine().also { line = it } != null) {
-                if (line?.lowercase()?.contains("frida") == true) {
-                    return true
+            BufferedReader(InputStreamReader(process.inputStream)).use { reader ->
+                var line: String?
+                while (reader.readLine().also { line = it } != null) {
+                    if (line?.lowercase()?.contains("frida") == true) {
+                        return true
+                    }
                 }
             }
         } catch (e: Exception) {
@@ -411,9 +422,14 @@ class DeviceInfo(private val context: Context) {
         try {
             val mapsFile = File("/proc/self/maps")
             if (mapsFile.exists()) {
-                val content = mapsFile.readText()
-                if (content.contains("frida") || content.contains("gadget")) {
-                    return true
+                // Use buffered reader for large files instead of readText()
+                mapsFile.bufferedReader().use { reader ->
+                    reader.lineSequence().forEach { line ->
+                        if (line.contains("frida", ignoreCase = true) || 
+                            line.contains("gadget", ignoreCase = true)) {
+                            return true
+                        }
+                    }
                 }
             }
         } catch (e: Exception) {
@@ -453,7 +469,6 @@ class DeviceInfo(private val context: Context) {
         try {
             val mapsFile = File("/proc/self/maps")
             if (mapsFile.exists()) {
-                val content = mapsFile.readText()
                 val suspiciousPatterns = arrayOf(
                     "substrate",
                     "xposed",
@@ -463,9 +478,15 @@ class DeviceInfo(private val context: Context) {
                     "inject"
                 )
                 
-                for (pattern in suspiciousPatterns) {
-                    if (content.lowercase().contains(pattern)) {
-                        return true
+                // Use buffered reader for large files
+                mapsFile.bufferedReader().use { reader ->
+                    reader.lineSequence().forEach { line ->
+                        val lineLower = line.lowercase()
+                        for (pattern in suspiciousPatterns) {
+                            if (lineLower.contains(pattern)) {
+                                return true
+                            }
+                        }
                     }
                 }
             }
