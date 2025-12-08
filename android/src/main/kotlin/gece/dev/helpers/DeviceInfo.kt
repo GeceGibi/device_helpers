@@ -280,10 +280,10 @@ class DeviceInfo(private val context: Context) {
      */
     private fun isDebugMode(): Boolean {
         return try {
-            // Check ApplicationInfo flag (most reliable)
+            // Check 1: ApplicationInfo flag (most reliable)
             val isDebuggable = (context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
             
-            // Additional check: Try to access BuildConfig.DEBUG via reflection
+            // Check 2: BuildConfig.DEBUG via reflection
             val buildConfigDebug = try {
                 val buildConfigClass = Class.forName("${context.packageName}.BuildConfig")
                 val debugField = buildConfigClass.getField("DEBUG")
@@ -292,7 +292,10 @@ class DeviceInfo(private val context: Context) {
                 false
             }
             
-            isDebuggable || buildConfigDebug
+            // Check 3: If running in emulator, likely debug mode
+            val isEmulator = checkEmulator.isEmulator()
+            
+            isDebuggable || buildConfigDebug || isEmulator
         } catch (e: Exception) {
             false
         }

@@ -610,27 +610,34 @@ private extension SwiftDeviceHelpers{
     
     /**
      * Checks if the app is running in debug mode
-     * Detects if the app was built with debug configuration
+     * Uses same logic as isEmulator for consistency
      * 
      * @return true if app is in debug mode, false otherwise
      */
     func isDebugMode() -> Bool {
-        #if DEBUG
-        return true
-        #else
-        // Check bundle configuration in path
-        let bundlePath = Bundle.main.bundlePath
-        if bundlePath.contains("Debug") || bundlePath.contains("debug") {
+        // Check 1: If running in emulator, it's debug mode
+        if isEmulator {
             return true
         }
         
-        // Check for development provisioning profile
-        if let _ = Bundle.main.path(forResource: "embedded", ofType: "mobileprovision") {
+        // Check 2: Compile-time flags
+        #if targetEnvironment(simulator) || DEBUG
+        return true
+        #endif
+        
+        // Check 3: App Store receipt check (most reliable)
+        if let receiptUrl = Bundle.main.appStoreReceiptURL {
+            if !FileManager.default.fileExists(atPath: receiptUrl.path) {
+                return true
+            }
+        }
+        
+        // Check 4: Development provisioning profile
+        if Bundle.main.path(forResource: "embedded", ofType: "mobileprovision") != nil {
             return true
         }
         
         return false
-        #endif
     }
     
     /**
@@ -640,18 +647,24 @@ private extension SwiftDeviceHelpers{
      * @return true if developer mode is enabled, false otherwise
      */
     func isUsbDebuggingEnabled() -> Bool {
-        // On iOS, check if we're running in a development environment
-        #if DEBUG
-        return true
-        #else
-        // Check for developer provisioning profile
-        guard let provisioningPath = Bundle.main.path(forResource: "embedded", ofType: "mobileprovision") else {
-            return false
+        // Check 1: Running with debugger
+        if isDebuggerAttached() {
+            return true
         }
         
-        // If provisioning profile exists, it's likely a development build
-        return FileManager.default.fileExists(atPath: provisioningPath)
+        // Check 2: In simulator (developer environment)
+        #if targetEnvironment(simulator)
+        return true
         #endif
+        
+        // Check 3: Development provisioning profile
+        if let provisioningPath = Bundle.main.path(forResource: "embedded", ofType: "mobileprovision") {
+            if FileManager.default.fileExists(atPath: provisioningPath) {
+                return true
+            }
+        }
+        
+        return false
     }
     
     /**
