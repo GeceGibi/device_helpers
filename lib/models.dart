@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'models.g.dart';
@@ -82,19 +80,11 @@ abstract class DeviceInfo with _$DeviceInfo {
 
     /// True if hooking frameworks detected (Xposed, Frida, etc.)
     @Default(false) bool isHookDetected,
-
-    /// Number of CPU cores
-    @Default(0) int numberOfProcessors,
   }) = _DeviceInfo;
 
   /// Creates DeviceInfo from JSON
   factory DeviceInfo.fromJson(Map<String, Object?> json) =>
-      _$DeviceInfoFromJson({
-        ...json,
-        'numberOfProcessors': Platform.numberOfProcessors,
-        'sdkVersion': Platform.version,
-        'os': Platform.operatingSystem,
-      });
+      _$DeviceInfoFromJson(json);
 }
 
 /// Exception when device info cannot be retrieved

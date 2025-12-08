@@ -86,9 +86,6 @@ mixin _$DeviceInfo {
   /// True if hooking frameworks detected (Xposed, Frida, etc.)
   bool get isHookDetected;
 
-  /// Number of CPU cores
-  int get numberOfProcessors;
-
   /// Create a copy of DeviceInfo
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -141,9 +138,7 @@ mixin _$DeviceInfo {
             (identical(other.isDebuggerAttached, isDebuggerAttached) ||
                 other.isDebuggerAttached == isDebuggerAttached) &&
             (identical(other.isHookDetected, isHookDetected) ||
-                other.isHookDetected == isHookDetected) &&
-            (identical(other.numberOfProcessors, numberOfProcessors) ||
-                other.numberOfProcessors == numberOfProcessors));
+                other.isHookDetected == isHookDetected));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -173,13 +168,12 @@ mixin _$DeviceInfo {
         isDebugMode,
         isUsbDebuggingEnabled,
         isDebuggerAttached,
-        isHookDetected,
-        numberOfProcessors
+        isHookDetected
       ]);
 
   @override
   String toString() {
-    return 'DeviceInfo(manufacturer: $manufacturer, brand: $brand, model: $model, uuid: $uuid, appVersion: $appVersion, appBundle: $appBundle, appBuild: $appBuild, appName: $appName, os: $os, osVersion: $osVersion, sdkVersion: $sdkVersion, isEmulator: $isEmulator, isTablet: $isTablet, isMIUI: $isMIUI, isGMS: $isGMS, isHMS: $isHMS, isHMOS: $isHMOS, isTV: $isTV, isDeveloperModeEnabled: $isDeveloperModeEnabled, isRooted: $isRooted, isDebugMode: $isDebugMode, isUsbDebuggingEnabled: $isUsbDebuggingEnabled, isDebuggerAttached: $isDebuggerAttached, isHookDetected: $isHookDetected, numberOfProcessors: $numberOfProcessors)';
+    return 'DeviceInfo(manufacturer: $manufacturer, brand: $brand, model: $model, uuid: $uuid, appVersion: $appVersion, appBundle: $appBundle, appBuild: $appBuild, appName: $appName, os: $os, osVersion: $osVersion, sdkVersion: $sdkVersion, isEmulator: $isEmulator, isTablet: $isTablet, isMIUI: $isMIUI, isGMS: $isGMS, isHMS: $isHMS, isHMOS: $isHMOS, isTV: $isTV, isDeveloperModeEnabled: $isDeveloperModeEnabled, isRooted: $isRooted, isDebugMode: $isDebugMode, isUsbDebuggingEnabled: $isUsbDebuggingEnabled, isDebuggerAttached: $isDebuggerAttached, isHookDetected: $isHookDetected)';
   }
 }
 
@@ -213,8 +207,7 @@ abstract mixin class $DeviceInfoCopyWith<$Res> {
       bool isDebugMode,
       bool isUsbDebuggingEnabled,
       bool isDebuggerAttached,
-      bool isHookDetected,
-      int numberOfProcessors});
+      bool isHookDetected});
 }
 
 /// @nodoc
@@ -253,7 +246,6 @@ class _$DeviceInfoCopyWithImpl<$Res> implements $DeviceInfoCopyWith<$Res> {
     Object? isUsbDebuggingEnabled = null,
     Object? isDebuggerAttached = null,
     Object? isHookDetected = null,
-    Object? numberOfProcessors = null,
   }) {
     return _then(_self.copyWith(
       manufacturer: null == manufacturer
@@ -352,10 +344,6 @@ class _$DeviceInfoCopyWithImpl<$Res> implements $DeviceInfoCopyWith<$Res> {
           ? _self.isHookDetected
           : isHookDetected // ignore: cast_nullable_to_non_nullable
               as bool,
-      numberOfProcessors: null == numberOfProcessors
-          ? _self.numberOfProcessors
-          : numberOfProcessors // ignore: cast_nullable_to_non_nullable
-              as int,
     ));
   }
 }
@@ -477,8 +465,7 @@ extension DeviceInfoPatterns on DeviceInfo {
             bool isDebugMode,
             bool isUsbDebuggingEnabled,
             bool isDebuggerAttached,
-            bool isHookDetected,
-            int numberOfProcessors)?
+            bool isHookDetected)?
         $default, {
     required TResult orElse(),
   }) {
@@ -509,8 +496,7 @@ extension DeviceInfoPatterns on DeviceInfo {
             _that.isDebugMode,
             _that.isUsbDebuggingEnabled,
             _that.isDebuggerAttached,
-            _that.isHookDetected,
-            _that.numberOfProcessors);
+            _that.isHookDetected);
       case _:
         return orElse();
     }
@@ -555,8 +541,7 @@ extension DeviceInfoPatterns on DeviceInfo {
             bool isDebugMode,
             bool isUsbDebuggingEnabled,
             bool isDebuggerAttached,
-            bool isHookDetected,
-            int numberOfProcessors)
+            bool isHookDetected)
         $default,
   ) {
     final _that = this;
@@ -586,8 +571,7 @@ extension DeviceInfoPatterns on DeviceInfo {
             _that.isDebugMode,
             _that.isUsbDebuggingEnabled,
             _that.isDebuggerAttached,
-            _that.isHookDetected,
-            _that.numberOfProcessors);
+            _that.isHookDetected);
       case _:
         throw StateError('Unexpected subclass');
     }
@@ -631,8 +615,7 @@ extension DeviceInfoPatterns on DeviceInfo {
             bool isDebugMode,
             bool isUsbDebuggingEnabled,
             bool isDebuggerAttached,
-            bool isHookDetected,
-            int numberOfProcessors)?
+            bool isHookDetected)?
         $default,
   ) {
     final _that = this;
@@ -662,8 +645,7 @@ extension DeviceInfoPatterns on DeviceInfo {
             _that.isDebugMode,
             _that.isUsbDebuggingEnabled,
             _that.isDebuggerAttached,
-            _that.isHookDetected,
-            _that.numberOfProcessors);
+            _that.isHookDetected);
       case _:
         return null;
     }
@@ -697,8 +679,7 @@ class _DeviceInfo implements DeviceInfo {
       this.isDebugMode = false,
       this.isUsbDebuggingEnabled = false,
       this.isDebuggerAttached = false,
-      this.isHookDetected = false,
-      this.numberOfProcessors = 0});
+      this.isHookDetected = false});
   factory _DeviceInfo.fromJson(Map<String, dynamic> json) =>
       _$DeviceInfoFromJson(json);
 
@@ -822,11 +803,6 @@ class _DeviceInfo implements DeviceInfo {
   @JsonKey()
   final bool isHookDetected;
 
-  /// Number of CPU cores
-  @override
-  @JsonKey()
-  final int numberOfProcessors;
-
   /// Create a copy of DeviceInfo
   /// with the given fields replaced by the non-null parameter values.
   @override
@@ -884,9 +860,7 @@ class _DeviceInfo implements DeviceInfo {
             (identical(other.isDebuggerAttached, isDebuggerAttached) ||
                 other.isDebuggerAttached == isDebuggerAttached) &&
             (identical(other.isHookDetected, isHookDetected) ||
-                other.isHookDetected == isHookDetected) &&
-            (identical(other.numberOfProcessors, numberOfProcessors) ||
-                other.numberOfProcessors == numberOfProcessors));
+                other.isHookDetected == isHookDetected));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -916,13 +890,12 @@ class _DeviceInfo implements DeviceInfo {
         isDebugMode,
         isUsbDebuggingEnabled,
         isDebuggerAttached,
-        isHookDetected,
-        numberOfProcessors
+        isHookDetected
       ]);
 
   @override
   String toString() {
-    return 'DeviceInfo(manufacturer: $manufacturer, brand: $brand, model: $model, uuid: $uuid, appVersion: $appVersion, appBundle: $appBundle, appBuild: $appBuild, appName: $appName, os: $os, osVersion: $osVersion, sdkVersion: $sdkVersion, isEmulator: $isEmulator, isTablet: $isTablet, isMIUI: $isMIUI, isGMS: $isGMS, isHMS: $isHMS, isHMOS: $isHMOS, isTV: $isTV, isDeveloperModeEnabled: $isDeveloperModeEnabled, isRooted: $isRooted, isDebugMode: $isDebugMode, isUsbDebuggingEnabled: $isUsbDebuggingEnabled, isDebuggerAttached: $isDebuggerAttached, isHookDetected: $isHookDetected, numberOfProcessors: $numberOfProcessors)';
+    return 'DeviceInfo(manufacturer: $manufacturer, brand: $brand, model: $model, uuid: $uuid, appVersion: $appVersion, appBundle: $appBundle, appBuild: $appBuild, appName: $appName, os: $os, osVersion: $osVersion, sdkVersion: $sdkVersion, isEmulator: $isEmulator, isTablet: $isTablet, isMIUI: $isMIUI, isGMS: $isGMS, isHMS: $isHMS, isHMOS: $isHMOS, isTV: $isTV, isDeveloperModeEnabled: $isDeveloperModeEnabled, isRooted: $isRooted, isDebugMode: $isDebugMode, isUsbDebuggingEnabled: $isUsbDebuggingEnabled, isDebuggerAttached: $isDebuggerAttached, isHookDetected: $isHookDetected)';
   }
 }
 
@@ -958,8 +931,7 @@ abstract mixin class _$DeviceInfoCopyWith<$Res>
       bool isDebugMode,
       bool isUsbDebuggingEnabled,
       bool isDebuggerAttached,
-      bool isHookDetected,
-      int numberOfProcessors});
+      bool isHookDetected});
 }
 
 /// @nodoc
@@ -998,7 +970,6 @@ class __$DeviceInfoCopyWithImpl<$Res> implements _$DeviceInfoCopyWith<$Res> {
     Object? isUsbDebuggingEnabled = null,
     Object? isDebuggerAttached = null,
     Object? isHookDetected = null,
-    Object? numberOfProcessors = null,
   }) {
     return _then(_DeviceInfo(
       manufacturer: null == manufacturer
@@ -1097,10 +1068,6 @@ class __$DeviceInfoCopyWithImpl<$Res> implements _$DeviceInfoCopyWith<$Res> {
           ? _self.isHookDetected
           : isHookDetected // ignore: cast_nullable_to_non_nullable
               as bool,
-      numberOfProcessors: null == numberOfProcessors
-          ? _self.numberOfProcessors
-          : numberOfProcessors // ignore: cast_nullable_to_non_nullable
-              as int,
     ));
   }
 }

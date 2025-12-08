@@ -2,6 +2,9 @@
 
 A comprehensive Flutter plugin for device information and utilities across Android, iOS, and Web platforms.
 
+[![pub package](https://img.shields.io/pub/v/device_helpers.svg)](https://pub.dev/packages/device_helpers)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 ## Features
 
 - 📱 **Device Information**: Get detailed device specs, manufacturer, model, OS version, and more
@@ -18,7 +21,7 @@ Add this to your package's `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  device_helpers: ^1.5.1
+  device_helpers: ^1.6.0
 ```
 
 Then run:
@@ -26,6 +29,14 @@ Then run:
 ```bash
 flutter pub get
 ```
+
+## What's New in 1.6.0
+
+- 🔒 **Enhanced Security**: Comprehensive security checks including debug mode, USB debugging, debugger detection, and hook framework detection (Xposed, Frida, Substrate)
+- 🌐 **Web Support**: Full web platform implementation with browser and OS detection
+- ✅ **Improved Detection**: More reliable GMS/HMS detection with package verification
+- 🚀 **Modern APIs**: Migrated to `package:web` for better web support
+- 🔧 **Better Error Handling**: Improved error handling across all platforms
 
 ## Quick Start
 
@@ -37,6 +48,11 @@ final deviceInfo = await DeviceHelpers.getInfo();
 print('Device: ${deviceInfo.manufacturer} ${deviceInfo.model}');
 print('OS: ${deviceInfo.os} ${deviceInfo.osVersion}');
 print('Is Emulator: ${deviceInfo.isEmulator}');
+
+// Security checks
+print('Debug Mode: ${deviceInfo.isDebugMode}');
+print('Rooted: ${deviceInfo.isRooted}');
+print('Hook Detected: ${deviceInfo.isHookDetected}');
 
 // Request IDFA (iOS only)
 final status = await DeviceHelpers.requestTrackingAuthorization();
@@ -126,7 +142,6 @@ Returns comprehensive device information including:
 - `isUsbDebuggingEnabled` - Whether USB debugging is enabled
 - `isDebuggerAttached` - Whether debugger is attached to the process
 - `isHookDetected` - Whether hooking frameworks are detected (Xposed, Frida, Substrate)
-- `numberOfProcessors` - Number of CPU cores
 
 #### IDFA Methods (iOS Only)
 
@@ -207,8 +222,6 @@ void printDeviceInfo() async {
     print('Huawei Services: ${info.isHMS}');
     print('HarmonyOS: ${info.isHMOS}');
     
-    print('\n=== Hardware ===');
-    print('CPU Cores: ${info.numberOfProcessors}');
   } catch (e) {
     print('Error getting device info: $e');
   }
@@ -304,13 +317,54 @@ The plugin detects various security threats:
 
 | Feature | Android | iOS | Web |
 |---------|---------|-----|-----|
-| Device Info | ✅ | ✅ | ✅ |
+| Device Info | ✅ | ✅ | ✅ (Limited) |
+| OS Detection | ✅ | ✅ | ✅ |
+| Browser Detection | ❌ | ❌ | ✅ |
+| Tablet Detection | ✅ | ✅ | ✅ |
+| Manufacturer Detection | ✅ | ✅ | ✅ (Limited) |
 | IDFA | ❌ | ✅ | ❌ |
 | Badge Update | ❌ | ✅ | ❌ |
 | Settings Navigation | ✅ | ✅ | ❌ |
 | Emulator Detection | ✅ | ✅ | ❌ |
 | Root Detection | ✅ | ✅ | ❌ |
-| Security Checks | ✅ | ✅ | ❌ |
+| Security Checks | ✅ | ✅ | ⚠️ (Limited) |
+
+### Web Platform Details
+
+On web platform, the following information is available:
+
+**Available:**
+- OS detection (Windows, macOS, Linux, Android, iOS)
+- Browser type (Chrome, Safari, Firefox, Edge, Opera)
+- OS version
+- Tablet detection (based on screen size and user agent)
+- Manufacturer detection (limited, based on user agent)
+- Debug mode detection (checks for localhost/127.0.0.1)
+
+**Not Available:**
+- Root/Jailbreak detection
+- Emulator detection
+- GMS/HMS availability
+- USB debugging detection
+- Debugger attached detection
+- Hook framework detection
+- IDFA/Advertising ID
+- Settings navigation
+- Badge management
+
+**Example Web Output:**
+```dart
+DeviceInfo(
+  os: 'windows',               // Detected from user agent
+  osVersion: '10.0',           // Windows version
+  manufacturer: 'Unknown',     // Limited detection
+  brand: 'Chrome',            // Browser name
+  model: 'Chrome on WINDOWS', // Browser + OS
+  isTablet: false,           // Screen-based detection
+  isDebugMode: true,         // localhost detection
+  // All security flags are false on web
+)
+```
 
 ## Contributing
 

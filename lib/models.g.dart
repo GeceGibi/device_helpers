@@ -31,7 +31,6 @@ _DeviceInfo _$DeviceInfoFromJson(Map<String, dynamic> json) => _DeviceInfo(
       isUsbDebuggingEnabled: json['isUsbDebuggingEnabled'] as bool? ?? false,
       isDebuggerAttached: json['isDebuggerAttached'] as bool? ?? false,
       isHookDetected: json['isHookDetected'] as bool? ?? false,
-      numberOfProcessors: (json['numberOfProcessors'] as num?)?.toInt() ?? 0,
     );
 
 Map<String, dynamic> _$DeviceInfoToJson(_DeviceInfo instance) =>
@@ -60,5 +59,4 @@ Map<String, dynamic> _$DeviceInfoToJson(_DeviceInfo instance) =>
       'isUsbDebuggingEnabled': instance.isUsbDebuggingEnabled,
       'isDebuggerAttached': instance.isDebuggerAttached,
       'isHookDetected': instance.isHookDetected,
-      'numberOfProcessors': instance.numberOfProcessors,
     };
