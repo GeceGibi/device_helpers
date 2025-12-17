@@ -583,26 +583,26 @@ private extension SwiftDeviceHelpers{
      * @return true if sandbox is intact, false if compromised
      */
     private func checkSandboxIntegrity() -> Bool {
-        // Check if we can access system directories that should be restricted
-        let restrictedPaths = [
-            "/private/var/mobile/Library/Caches",
-            "/private/var/mobile/Containers/Data/Application"
-        ]
+        // Try to write to system directory - should fail in normal sandbox
+        let testPath = "/private/jailbreak.txt"
+        do {
+            try "test".write(toFile: testPath, atomically: true, encoding: .utf8)
+            // If write succeeds, sandbox is compromised
+            try? FileManager.default.removeItem(atPath: testPath)
+            return false
+        } catch {
+            // Expected - cannot write outside sandbox
+        }
         
-        for path in restrictedPaths {
-            if FileManager.default.isReadableFile(atPath: path) {
-                // Try to list contents - this should fail in normal sandbox
-                do {
-                    let contents = try FileManager.default.contentsOfDirectory(atPath: path)
-                    // If we can list contents of system directories, sandbox might be compromised
-                    if !contents.isEmpty {
-                        return false
-                    }
-                } catch {
-                    // This is expected behavior - we shouldn't be able to read these directories
-                    continue
-                }
+        // Check for fork() availability - jailbroken devices can fork
+        let pid = fork()
+        if pid >= 0 {
+            // fork succeeded - device is jailbroken
+            if pid > 0 {
+                // Parent process - kill child
+                kill(pid, SIGTERM)
             }
+            return false
         }
         
         return true
@@ -610,7 +610,7 @@ private extension SwiftDeviceHelpers{
     
     /**
      * Checks if the app is running in debug mode
-     * Uses same logic as isEmulator for consistency
+     * Uses multiple detection methods for accuracy
      * 
      * @return true if app is in debug mode, false otherwise
      */
@@ -625,14 +625,24 @@ private extension SwiftDeviceHelpers{
         return true
         #endif
         
-        // Check 3: App Store receipt check (most reliable)
+        // Check 3: Debugger attached
+        if isDebuggerAttached() {
+            return true
+        }
+        
+        // Check 4: App Store receipt check (most reliable)
         if let receiptUrl = Bundle.main.appStoreReceiptURL {
-            if !FileManager.default.fileExists(atPath: receiptUrl.path) {
+            let receiptPath = receiptUrl.path
+            if !FileManager.default.fileExists(atPath: receiptPath) {
+                return true
+            }
+            // Check if receipt is a sandbox receipt (indicates development)
+            if receiptPath.contains("sandboxReceipt") {
                 return true
             }
         }
         
-        // Check 4: Development provisioning profile
+        // Check 5: Development provisioning profile
         if Bundle.main.path(forResource: "embedded", ofType: "mobileprovision") != nil {
             return true
         }

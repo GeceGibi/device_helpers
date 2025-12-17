@@ -10,9 +10,6 @@ import android.os.Build
 import android.os.Debug
 import android.provider.Settings
 import android.text.TextUtils
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.GoogleApiAvailability
-import com.huawei.hms.api.HuaweiApiAvailability
 import com.scottyab.rootbeer.RootBeer
 import io.flutter.plugin.common.MethodChannel
 import java.io.BufferedReader
@@ -211,17 +208,45 @@ class DeviceInfo(private val context: Context) {
 
     /**
      * Checks if Google Mobile Services (GMS) are available
-     * Uses both PackageManager check and Google Play Services availability check
+     * Uses multiple fallback methods for maximum compatibility:
+     * 1. Try reflection-based GoogleApiAvailability check (most accurate)
+     * 2. Fall back to package manager check (for edge cases)
      * 
-     * @return true if GMS is available, false otherwise
+     * @return true if GMS is available and functional, false otherwise
      */
     private fun isGMSAvailable(): Boolean {
-        // First check if Google Play Services package is installed
+        // Method 1: Try GoogleApiAvailability via reflection (preferred)
+        try {
+            val googleApiAvailability = Class.forName("com.google.android.gms.common.GoogleApiAvailability")
+            val instanceMethod = googleApiAvailability.getMethod("getInstance")
+            val instance = instanceMethod.invoke(null)
+            
+            val isAvailableMethod = googleApiAvailability.getMethod(
+                "isGooglePlayServicesAvailable",
+                Context::class.java
+            )
+            val result = isAvailableMethod.invoke(instance, context) as Int
+            
+            // ConnectionResult codes:
+            // SUCCESS = 0
+            // SERVICE_VERSION_UPDATE_REQUIRED = 2 (works but needs update)
+            // SERVICE_UPDATING = 18 (currently updating, may work)
+            // Accept these as available for Honor and similar devices
+            return when (result) {
+                0 -> true  // SUCCESS
+                2 -> true  // SERVICE_VERSION_UPDATE_REQUIRED
+                18 -> true // SERVICE_UPDATING
+                else -> false
+            }
+        } catch (e: Exception) {
+            // GoogleApiAvailability class not found or method failed
+        }
+        
+        // Method 2: Fallback to package check (less accurate but works without API)
         return try {
-            packageManager.getPackageInfo("com.google.android.gms", 0)
-            // If package exists, also verify via GoogleApiAvailability
-            GoogleApiAvailability.getInstance()
-                .isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS
+            val packageInfo = packageManager.getPackageInfo("com.google.android.gms", 0)
+            // If package exists and is enabled, consider it available
+            packageInfo.applicationInfo?.enabled == true
         } catch (e: PackageManager.NameNotFoundException) {
             false
         }
@@ -229,17 +254,36 @@ class DeviceInfo(private val context: Context) {
 
     /**
      * Checks if Huawei Mobile Services (HMS) are available
-     * Uses both PackageManager check and Huawei Mobile Services availability check
+     * Uses multiple fallback methods for maximum compatibility:
+     * 1. Try reflection-based HuaweiApiAvailability check (most accurate)
+     * 2. Fall back to package manager check (for edge cases)
      * 
-     * @return true if HMS is available, false otherwise
+     * @return true if HMS is available and functional, false otherwise
      */
     private fun isHMSAvailable(): Boolean {
-        // First check if Huawei Mobile Services package is installed
+        // Method 1: Try HuaweiApiAvailability via reflection (preferred)
+        try {
+            val huaweiApiAvailability = Class.forName("com.huawei.hms.api.HuaweiApiAvailability")
+            val instanceMethod = huaweiApiAvailability.getMethod("getInstance")
+            val instance = instanceMethod.invoke(null)
+            
+            val isAvailableMethod = huaweiApiAvailability.getMethod(
+                "isHuaweiMobileServicesAvailable",
+                Context::class.java
+            )
+            val result = isAvailableMethod.invoke(instance, context) as Int
+            
+            // ConnectionResult.SUCCESS = 0
+            return result == 0
+        } catch (e: Exception) {
+            // HuaweiApiAvailability class not found or method failed
+        }
+        
+        // Method 2: Fallback to package check (less accurate but works without API)
         return try {
-            packageManager.getPackageInfo("com.huawei.hms", 0)
-            // If package exists, also verify via HuaweiApiAvailability
-            HuaweiApiAvailability.getInstance()
-                .isHuaweiMobileServicesAvailable(context) == ConnectionResult.SUCCESS
+            val packageInfo = packageManager.getPackageInfo("com.huawei.hms", 0)
+            // If package exists and is enabled, consider it available
+            packageInfo.applicationInfo?.enabled == true
         } catch (e: PackageManager.NameNotFoundException) {
             false
         }
@@ -274,7 +318,6 @@ class DeviceInfo(private val context: Context) {
     /**
      * Checks if the app is running in debug mode
      * Detects if the app was built with debug flag enabled
-     * Also checks for BuildConfig.DEBUG flag
      * 
      * @return true if app is in debug mode, false otherwise
      */
@@ -292,10 +335,10 @@ class DeviceInfo(private val context: Context) {
                 false
             }
             
-            // Check 3: If running in emulator, likely debug mode
-            val isEmulator = checkEmulator.isEmulator()
+            // Check 3: Debugger attached
+            val debuggerAttached = isDebuggerAttached()
             
-            isDebuggable || buildConfigDebug || isEmulator
+            isDebuggable || buildConfigDebug || debuggerAttached
         } catch (e: Exception) {
             false
         }

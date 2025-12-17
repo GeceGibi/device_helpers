@@ -148,11 +148,19 @@ class DeviceHelpers : FlutterPlugin, MethodCallHandler, ActivityAware {
      * @param result Flutter result callback
      */
     private fun openAppSettings(result: Result) {
-        routing?.openAppSettings(result) ?: result.error(
-            "UNAVAILABLE",
-            "Activity is not attached.",
-            null
-        )
+        try {
+            routing?.openAppSettings(result) ?: result.error(
+                "UNAVAILABLE",
+                "Activity is not attached. Cannot open settings.",
+                null
+            )
+        } catch (e: Exception) {
+            result.error(
+                "SETTINGS_ERROR",
+                "Failed to open app settings: ${e.message}",
+                e.stackTraceToString()
+            )
+        }
     }
 
     /**
@@ -162,21 +170,38 @@ class DeviceHelpers : FlutterPlugin, MethodCallHandler, ActivityAware {
      * @param result Flutter result callback
      */
     private fun openAppNotificationSettings(result: Result) {
-        routing?.openAppNotificationSettings(result) ?: result.error(
-            "UNAVAILABLE",
-            "Activity is not attached.",
-            null
-        )
+        try {
+            routing?.openAppNotificationSettings(result) ?: result.error(
+                "UNAVAILABLE",
+                "Activity is not attached. Cannot open notification settings.",
+                null
+            )
+        } catch (e: Exception) {
+            result.error(
+                "SETTINGS_ERROR",
+                "Failed to open notification settings: ${e.message}",
+                e.stackTraceToString()
+            )
+        }
     }
 
     /**
      * Updates the app badge count
      * Currently a placeholder for badge functionality
+     * Badge support requires ShortcutBadger library
      * 
      * @param count The badge count to set
      */
     private fun updateBadge(count: Int) {
-        // ShortcutBadger.applyCount(context, count)
-        // Badge functionality can be implemented here
+        try {
+            // Validate badge count
+            if (count < 0) {
+                return
+            }
+            // ShortcutBadger.applyCount(context, count)
+            // Badge functionality can be implemented here with ShortcutBadger library
+        } catch (e: Exception) {
+            // Silent fail - badge update is not critical
+        }
     }
 }
