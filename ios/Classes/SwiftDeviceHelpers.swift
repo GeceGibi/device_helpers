@@ -594,15 +594,28 @@ private extension SwiftDeviceHelpers{
             // Expected - cannot write outside sandbox
         }
         
-        // Check for fork() availability - jailbroken devices can fork
-        let pid = fork()
-        if pid >= 0 {
-            // fork succeeded - device is jailbroken
-            if pid > 0 {
-                // Parent process - kill child
-                kill(pid, SIGTERM)
+        // Check for symbolic link manipulation (jailbreak indicator)
+        let restrictedPaths = [
+            "/Applications",
+            "/Library/Ringtones",
+            "/Library/Wallpaper",
+            "/usr/arm-apple-darwin9",
+            "/usr/include",
+            "/usr/libexec",
+            "/usr/share"
+        ]
+        
+        for path in restrictedPaths {
+            do {
+                let attributes = try FileManager.default.attributesOfItem(atPath: path)
+                // If we can read attributes of system directories, sandbox might be compromised
+                if attributes[.type] as? FileAttributeType == .typeSymbolicLink {
+                    return false
+                }
+            } catch {
+                // Expected - cannot access system directories
+                continue
             }
-            return false
         }
         
         return true

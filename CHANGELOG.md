@@ -1,3 +1,18 @@
+## 1.7.2
+
+### Fixed
+- **iOS Build Error**: Removed deprecated `fork()` system call that was causing compilation errors
+  - `fork()` is unavailable in modern iOS: "Please use threads or posix_spawn*()"
+  - Replaced with symbolic link manipulation check for jailbreak detection
+  - Added restricted path checks for enhanced sandbox integrity verification
+
+### Improved
+- **iOS Security**: Modern jailbreak detection methods following current iOS best practices
+  - File system write tests
+  - Symbolic link manipulation detection
+  - Restricted system path accessibility checks
+  - Compliant with App Store guidelines
+
 ## 1.7.1
 
 ### Fixed
