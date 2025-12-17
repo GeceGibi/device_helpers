@@ -1,3 +1,17 @@
+## 1.7.1
+
+### Fixed
+- **Critical: JSON Key Naming Mismatch** - Fixed inconsistent JSON key naming between native and Dart code
+  - Android: Changed `isGms` → `isGMS`, `isHms` → `isHMS`, `isMiui` → `isMIUI`, `isHmos` → `isHMOS`, `isTv` → `isTV`
+  - iOS: Changed `isGms` → `isGMS`, `isHms` → `isHMS`, `isMiui` → `isMIUI`, `isHmos` → `isHMOS`, `isTv` → `isTV`
+  - This caused all these boolean flags to always return `false` regardless of actual device state
+  - **Impact**: Honor and other devices with GMS were incorrectly reporting `isGMS: false` even when Google Play Services was available
+
+### Improved
+- **Code Quality**: Removed debug logging statements for production readiness
+- **Performance**: Simplified GMS availability check logic
+- **Readability**: Cleaner code structure in device info methods
+
 ## 1.7.0
 
 ### Added

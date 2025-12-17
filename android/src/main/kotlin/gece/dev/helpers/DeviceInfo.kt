@@ -76,12 +76,12 @@ class DeviceInfo(private val context: Context) {
             "manufacturer" to Build.MANUFACTURER,
             "brand" to Build.BRAND,
             "model" to Build.MODEL,
-            "isMiui" to isMIUI(),
+            "isMIUI" to isMIUI(),
             "isTablet" to isTablet(),
-            "isGms" to isGMSAvailable(),
-            "isHms" to isHMSAvailable(),
-            "isHmos" to isHMOS(),
-            "isTv" to isTV(),
+            "isGMS" to isGMSAvailable(),
+            "isHMS" to isHMSAvailable(),
+            "isHMOS" to isHMOS(),
+            "isTV" to isTV(),
             "isEmulator" to checkEmulator.isEmulator(),
             "isDeveloper_mode_enabled" to isDeveloperModeEnabled(),
             "isRooted" to isRooted(),
@@ -233,9 +233,7 @@ class DeviceInfo(private val context: Context) {
             // SERVICE_UPDATING = 18 (currently updating, may work)
             // Accept these as available for Honor and similar devices
             return when (result) {
-                0 -> true  // SUCCESS
-                2 -> true  // SERVICE_VERSION_UPDATE_REQUIRED
-                18 -> true // SERVICE_UPDATING
+                0, 2, 18 -> true  // SUCCESS, UPDATE_REQUIRED, or UPDATING
                 else -> false
             }
         } catch (e: Exception) {
@@ -245,9 +243,13 @@ class DeviceInfo(private val context: Context) {
         // Method 2: Fallback to package check (less accurate but works without API)
         return try {
             val packageInfo = packageManager.getPackageInfo("com.google.android.gms", 0)
+            val appInfo = packageInfo.applicationInfo
             // If package exists and is enabled, consider it available
-            packageInfo.applicationInfo?.enabled == true
+            // If appInfo is null but package exists, assume it's available
+            appInfo?.enabled ?: true
         } catch (e: PackageManager.NameNotFoundException) {
+            false
+        } catch (e: Exception) {
             false
         }
     }
