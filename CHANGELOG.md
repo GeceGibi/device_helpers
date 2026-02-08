@@ -1,3 +1,19 @@
+## 1.7.3
+
+### Fixed
+- **Android**: `isDeveloperModeEnabled` now correctly detects developer mode on MIUI (Xiaomi) devices
+  - Added `Settings.Secure` namespace fallback for devices storing settings there
+  - Added MIUI-specific system property check (`persist.sys.development_options`)
+  - Fixes issue where developer mode was not detected on Xiaomi devices even when enabled
+
+### Improved
+- **iOS Jailbreak Detection**: Added comprehensive rootless jailbreak detection (iOS 15+)
+  - Added `/var/jb/` and related rootless jailbreak paths
+  - Added modern package managers: Sileo, Zebra, Installer
+  - Added Substitute/TweakInject library detection
+  - Added dpkg/apt package system paths
+  - Enhanced with additional system paths for better coverage
+
 ## 1.7.2
 
 ### Fixed

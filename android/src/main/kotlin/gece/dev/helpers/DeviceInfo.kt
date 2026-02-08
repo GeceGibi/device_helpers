@@ -95,6 +95,7 @@ class DeviceInfo(private val context: Context) {
     /**
      * Checks if developer mode is enabled on the device
      * Also checks for development settings enabled flag
+     * Includes MIUI-specific fallbacks for Xiaomi devices
      * 
      * @return true if developer mode is enabled, false otherwise
      */
@@ -105,13 +106,25 @@ class DeviceInfo(private val context: Context) {
                 context.contentResolver, Settings.Global.ADB_ENABLED, 0
             ) != 0
             
-            // Check if development settings are enabled
+            // Check if development settings are enabled (Global namespace)
             @Suppress("DEPRECATION")
             val devSettingsEnabled = Settings.Global.getInt(
                 context.contentResolver, Settings.Global.DEVELOPMENT_SETTINGS_ENABLED, 0
             ) != 0
             
-            adbEnabled || devSettingsEnabled
+            // Some devices store in Secure namespace instead
+            val devSettingsSecure = try {
+                Settings.Secure.getInt(
+                    context.contentResolver, "development_settings_enabled", 0
+                ) != 0
+            } catch (e: Exception) { false }
+            
+            // MIUI specific: Check via system property
+            val miuiDevEnabled = if (isMIUI()) {
+                !TextUtils.isEmpty(SystemProperties.get("persist.sys.development_options"))
+            } else false
+            
+            adbEnabled || devSettingsEnabled || devSettingsSecure || miuiDevEnabled
         } catch (e: Exception) {
             false
         }

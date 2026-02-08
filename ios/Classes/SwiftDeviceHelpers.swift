@@ -509,6 +509,7 @@ private extension SwiftDeviceHelpers{
 
         // 1. Check for known jailbreak files/directories
         let jailbreakPaths = [
+            // Classic jailbreak paths
             "/Applications/Cydia.app",
             "/Library/MobileSubstrate/MobileSubstrate.dylib",
             "/bin/bash",
@@ -516,6 +517,22 @@ private extension SwiftDeviceHelpers{
             "/etc/apt",
             "/private/var/lib/apt/",
             "/usr/bin/ssh",
+            "/usr/bin/apt",
+            "/var/lib/dpkg/",
+            "/var/cache/apt/",
+            
+            // Rootless jailbreak paths (iOS 15+)
+            "/var/jb/",
+            "/var/jb/usr/bin/apt",
+            "/var/jb/Library/MobileSubstrate/",
+            
+            // Package managers
+            "/Applications/Cydia.app",
+            "/Applications/Sileo.app",
+            "/Applications/Zebra.app",
+            "/Applications/Installer.app",
+            
+            // Legacy jailbreak apps
             "/Applications/blackra1n.app",
             "/Applications/FakeCarrier.app",
             "/Applications/Icy.app",
@@ -524,10 +541,23 @@ private extension SwiftDeviceHelpers{
             "/Applications/RockApp.app",
             "/Applications/SBSettings.app",
             "/Applications/WinterBoard.app",
+            
+            // Substrate/Substitute
             "/Library/MobileSubstrate/DynamicLibraries/Veency.plist",
             "/Library/MobileSubstrate/DynamicLibraries/LiveClock.plist",
+            "/usr/lib/libsubstitute.dylib",
+            "/usr/lib/substitute-inserter.dylib",
+            "/usr/lib/TweakInject.dylib",
+            
+            // Launch daemons
             "/System/Library/LaunchDaemons/com.ikey.bbot.plist",
-            "/System/Library/LaunchDaemons/com.saurik.Cydia.Startup.plist"
+            "/System/Library/LaunchDaemons/com.saurik.Cydia.Startup.plist",
+            
+            // Other indicators
+            "/private/var/stash",
+            "/private/var/tmp/cydia.log",
+            "/usr/libexec/ssh-keysign",
+            "/usr/libexec/sftp-server"
         ]
         
         for path in jailbreakPaths {
